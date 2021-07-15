@@ -97,3 +97,5 @@ class BackgroundWorker(object):
     def stop(self):
         self._timer.cancel()
         self.is_running = False
+
+
