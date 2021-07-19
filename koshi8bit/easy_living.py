@@ -11,41 +11,69 @@ class Format:
     ###
 
     @staticmethod
-    def date_ui():
-        return Format.date()
+    def date_ui(dt: bool):
+        f = Format.date()
+        if dt:
+            return Format.now(f)
+        else:
+            return f
 
     @staticmethod
     def separator_ui():
         return '@'
 
     @staticmethod
-    def time_ui(show_ms):
-        result = '%H:%M:%S'
+    def time_ui(dt: bool, show_ms: bool):
+        f = '%H:%M:%S'
         if show_ms:
-            result = result + '.%f'
-        return result
+            f = f + '.%f'
+
+        if dt:
+            return Format.now(f)
+        else:
+            return f
 
     @staticmethod
-    def date_time_ui(show_ms):
-        return Format.date_ui() + Format.separator_ui() + Format.time_ui(show_ms)
+    def date_time_ui(dt: bool, show_ms: bool):
+        f = Format.date_ui(False) + Format.separator_ui() + Format.time_ui(False, show_ms)
+        if dt:
+            return Format.now(f)
+        else:
+            return f
 
     ###
 
     @staticmethod
-    def date_file():
-        return Format.date()
+    def date_file(dt: bool):
+        f = Format.date()
+        if dt:
+            return Format.now(f)
+        else:
+            return f
 
     @staticmethod
     def separator_file():
         return '--'
 
     @staticmethod
-    def time_file():
-        return '%H-%M-%S'
+    def time_file(dt: bool):
+        f = '%H-%M-%S'
+        if dt:
+            return Format.now(f)
+        else:
+            return f
 
     @staticmethod
-    def date_time_file():
-        return Format.date_file() + Format.separator_file() + Format.time_file()
+    def date_time_file(dt: bool):
+        f = Format.date_file(False) + Format.separator_file() + Format.time_file(False)
+        if dt:
+            return Format.now(f)
+        else:
+            return f
+
+    @staticmethod
+    def now(template: str):
+        return datetime.datetime.now().strftime(template)
 
     ###
 
