@@ -1,8 +1,4 @@
-# https://console.cloud.google.com/iam-admin/iam?project=hmc-bot
-# https://console.cloud.google.com/cloud-resource-manager
-#
-# https://console.cloud.google.com/apis/credentials?project=hmc-bot
-# make Service Accounts, потом загрузи json, ткнув по имени и перейди на вкладку keys. Там создай новый ключ и загрузи JSON файл
+# https://habr.com/ru/post/483302/
 
 from oauth2client.service_account import ServiceAccountCredentials
 import httplib2
@@ -15,8 +11,8 @@ class GoogleSheets:
     service = None
     spreadsheet_id = None
 
-    def __init__(self, spreadsheet_id):
-        credentials_file = 'sheets/creds.json'
+    def __init__(self, creds_json: str, spreadsheet_id: str):
+        credentials_file = creds_json
         credentials = ServiceAccountCredentials.from_json_keyfile_name(
             credentials_file,
             ['https://www.googleapis.com/auth/spreadsheets',

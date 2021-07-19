@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"><script type="text/javascript" async="" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/common-engine.js" data-roxot-inited="true"></script><script type="text/javascript" async="" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/roxot-manager.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+  <title>Начинаем работу с Google Sheets на Python. От регистрации до чтения данных / Хабр</title>
+  <style>
+    /* cyrillic-ext */
+    @font-face {
+      font-family: 'Fira Sans';
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url(https://fonts.gstatic.com/s/firasans/v11/va9B4kDNxMZdWfMOD5VnZKveSxf6TF0.woff2) format('woff2');
+      unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+    }
+
+    /* cyrillic */
+    @font-face {
+      font-family: 'Fira Sans';
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url(https://fonts.gstatic.com/s/firasans/v11/va9B4kDNxMZdWfMOD5VnZKveQhf6TF0.woff2) format('woff2');
+      unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+    }
+
+    /* latin-ext */
+    @font-face {
+      font-family: 'Fira Sans';
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url(https://fonts.gstatic.com/s/firasans/v11/va9B4kDNxMZdWfMOD5VnZKveSBf6TF0.woff2) format('woff2');
+      unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+
+    /* latin */
+    @font-face {
+      font-family: 'Fira Sans';
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url(https://fonts.gstatic.com/s/firasans/v11/va9B4kDNxMZdWfMOD5VnZKveRhf6.woff2) format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+  </style>
+  <link rel="preload" href="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/chunk-vendors.css" as="style"><link rel="preload" href="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/chunk-vendors.js" as="script"><link rel="preload" href="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/app.css" as="style"><link rel="preload" href="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/app.js" as="script"><link rel="preload" href="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/chunk-f458c7c4.css" as="style"><link rel="preload" href="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/chunk-f458c7c4.js" as="script">
+  <link rel="stylesheet" href="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/chunk-vendors.css"><link rel="stylesheet" href="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/app.css"><link rel="stylesheet" href="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/chunk-f458c7c4.css">
+  <script src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/osd.js"></script><script type="text/javascript" async="" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/js"></script><script async="" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/tag.js"></script><script async="" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/analytics.js"></script><script>window.i18nFetch = new Promise((res, rej) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', '/js/i18n/ru-compiled.b6c9c5bbcd70cbfc399bdeff450c1b75.json');
+          xhr.responseType = 'json';
+          xhr.onload = function(e) {
+            if (this.status === 200) {
+              res({ru: xhr.response});
+            } else {
+              rej(e);
+            }
+          };
+          xhr.send();
+        });</script>
+  
+  <script data-vue-meta="ssr" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/ads.js" onload="window['zhY4i4nJ9K'] = true" data-vmid="checkad"></script><script data-vue-meta="ssr" type="application/ld+json" data-vmid="ldjson-schema">{"@context":"http:\/\/schema.org","@type":"Article","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/habr.com\/ru\/post\/483302\/"},"headline":"Начинаем работу с Google Sheets на Python. От регистрации до чтения данных","datePublished":"2020-01-09T15:24:28+03:00","dateModified":"2020-01-09T15:24:28+03:00","author":{"@type":"Person","name":"Кулюкин Олег"},"publisher":{"@type":"Organization","name":"Habr","logo":{"@type":"ImageObject","url":"https:\/\/habrastorage.org\/webt\/a_\/lk\/9m\/a_lk9mjkccjox-zccjrpfolmkmq.png"}},"description":"Довольно долго я обходился выгрузкой данных в Excel, но мода меняется, пользователи хотят в облака.  Начав переводить ряд проектов на Python, решил, что самое вр...","url":"https:\/\/habr.com\/ru\/post\/483302\/#post-content-body","about":["h_python","h_google_api","f_"],"image":["https:\/\/habrastorage.org\/webt\/fi\/-w\/y6\/fi-wy693xsw54m-xh7jnh-17ble.jpeg","https:\/\/habrastorage.org\/webt\/pq\/li\/wq\/pqliwqiudct5g7s6q_rm6iag6tw.jpeg","https:\/\/habrastorage.org\/webt\/3z\/pr\/yb\/3zprybr3paa7eqi5sxsurdt_aq8.jpeg","https:\/\/habrastorage.org\/webt\/fu\/4a\/cl\/fu4aclu3gibqg8-1rae94sovf08.jpeg","https:\/\/habrastorage.org\/webt\/_p\/dx\/al\/_pdxalr_zhciudnkssxnej4iybo.jpeg","https:\/\/habrastorage.org\/webt\/8e\/ss\/t-\/8esst-mi2_3ioiylkv5ej1itpxu.jpeg","https:\/\/habrastorage.org\/webt\/4h\/fe\/18\/4hfe18ts9ywn44bevocl3-fpsue.jpeg","https:\/\/habrastorage.org\/webt\/0x\/d9\/sx\/0xd9sxloeigykugl41pdx_qgp64.jpeg","https:\/\/habrastorage.org\/webt\/pv\/jc\/xk\/pvjcxkvp6mjwda30w3uorjkbex4.jpeg","https:\/\/habrastorage.org\/webt\/75\/sz\/3l\/75sz3lffo7nr8119jrpu-vvm1i8.jpeg","https:\/\/habrastorage.org\/webt\/n9\/0c\/gh\/n90cgh2hyrqigsxjus02cwhrt-c.jpeg","https:\/\/habrastorage.org\/webt\/w8\/3f\/wc\/w83fwcm2h2zcq4qza3pysyjhseu.jpeg","https:\/\/habrastorage.org\/webt\/fj\/ks\/iw\/fjksiwvxazgd-6erfruqwrwq8os.jpeg","https:\/\/habrastorage.org\/webt\/jk\/f-\/ys\/jkf-ysfiu--oqojyf8vi1lwphao.jpeg","https:\/\/habrastorage.org\/webt\/se\/e4\/z4\/see4z4tacpn3manmkn_tixgkgck.jpeg","https:\/\/habrastorage.org\/webt\/c0\/ak\/ln\/c0aklnjxew9zwlph6fgp1ym-yt8.jpeg","https:\/\/habrastorage.org\/webt\/w8\/3f\/wc\/w83fwcm2h2zcq4qza3pysyjhseu.jpeg","http:\/\/img\/Task09_17.jpg","https:\/\/habrastorage.org\/webt\/ov\/ue\/i6\/ovuei6xocepbhtqmgs8ydb9tbt4.jpeg","https:\/\/habrastorage.org\/webt\/qh\/p5\/yr\/qhp5yrn74itkqnbwkvtstlcjwha.jpeg","https:\/\/habrastorage.org\/webt\/t7\/z5\/mv\/t7z5mvudm8lmipgvbcxsjn6jsr4.jpeg","https:\/\/habrastorage.org\/webt\/y0\/n7\/te\/y0n7te-mweqjhzr_9eg0gqsj50q.jpeg","https:\/\/habrastorage.org\/webt\/ob\/3h\/h_\/ob3hh_l6npzamjxabctqph8lrny.jpeg","https:\/\/habrastorage.org\/webt\/wu\/zv\/h4\/wuzvh4jz9uloyxlkhfnxqk7otke.jpeg","https:\/\/habrastorage.org\/webt\/7v\/8l\/db\/7v8ldbkjnukd2j6lukhezmaupje.jpeg","https:\/\/habrastorage.org\/webt\/ba\/pi\/tq\/bapitq07wcnkdodrbmodxssvvl8.jpeg","https:\/\/habrastorage.org\/webt\/an\/mx\/ix\/anmxixf0r8g3tgobvulohsg3w5i.jpeg","https:\/\/habrastorage.org\/webt\/ms\/yc\/ph\/msycphwvaxu8x49rvc2vq6zwdfo.jpeg"]}</script>
+  <script src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/gpt.js" async=""></script>
+  <style>.grecaptcha-badge{visibility: hidden;}</style>
+  <meta name="habr-version" content="2.39.1">
+  
+  <meta data-vue-meta="ssr" property="fb:app_id" content="444736788986613"><meta data-vue-meta="ssr" property="fb:pages" content="472597926099084"><meta data-vue-meta="ssr" name="twitter:card" content="summary_large_image"><meta data-vue-meta="ssr" name="twitter:site" content="@habr_eng"><meta data-vue-meta="ssr" property="og:title" content="Начинаем работу с Google Sheets на Python. От регистрации до чтения данных" data-vmid="og:title"><meta data-vue-meta="ssr" name="twitter:title" content="Начинаем работу с Google Sheets на Python. От регистрации до чтения данных" data-vmid="twitter:title"><meta data-vue-meta="ssr" name="aiturec:title" content="Начинаем работу с Google Sheets на Python. От регистрации до чтения данных" data-vmid="aiturec:title"><meta data-vue-meta="ssr" itemprop="image" content="https://habr.com/share/publication/483302/3509a2b5b5970c4d40d3202c1a97e442/" data-vmid="image:itemprop"><meta data-vue-meta="ssr" property="og:image" content="https://habr.com/share/publication/483302/3509a2b5b5970c4d40d3202c1a97e442/" data-vmid="og:image"><meta data-vue-meta="ssr" property="aiturec:image" content="https://habr.com/share/publication/483302/3509a2b5b5970c4d40d3202c1a97e442/" data-vmid="aiturec:image"><meta data-vue-meta="ssr" name="twitter:image" content="https://habr.com/share/publication/483302/3509a2b5b5970c4d40d3202c1a97e442/" data-vmid="twitter:image"><meta data-vue-meta="ssr" property="vk:image" content="https://habr.com/share/publication/483302/3509a2b5b5970c4d40d3202c1a97e442/" data-vmid="vk:image"><meta data-vue-meta="ssr" property="aiturec:item_id" content="483302" data-vmid="aiturec:item_id"><meta data-vue-meta="ssr" property="aiturec:datetime" content="2020-01-09T12:24:28.000Z" data-vmid="aiturec:datetime"><meta data-vue-meta="ssr" property="og:type" content="article" data-vmid="og:type"><meta data-vue-meta="ssr" property="og:locale" content="ru_RU" data-vmid="og:locale"><meta data-vue-meta="ssr" property="og:image:width" content="1200" data-vmid="og:image:width"><meta data-vue-meta="ssr" property="og:image:height" content="630" data-vmid="og:image:height">
+  <link data-vue-meta="ssr" href="https://habr.com/ru/rss/post/483302/?fl=ru" type="application/rss+xml" title="" rel="alternate" name="rss"><link data-vue-meta="ssr" href="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/a.htm" rel="canonical" data-vmid="canonical"><link data-vue-meta="ssr" data-vmid="hreflang"><link data-vue-meta="ssr" image_src="image" href="https://habr.com/share/publication/483302/3509a2b5b5970c4d40d3202c1a97e442/" data-vmid="image:href">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#303b44">
+  <meta name="msapplication-TileColor" content="#629FBC">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="shortcut icon" type="image/png" sizes="16x16" href="https://assets.habr.com/habr-web/img/favicons/favicon-16.png">
+  <link rel="shortcut icon" type="image/png" sizes="32x32" href="https://assets.habr.com/habr-web/img/favicons/favicon-32.png">
+  <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="https://assets.habr.com/habr-web/img/favicons/apple-touch-icon-76.png">
+  <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="https://assets.habr.com/habr-web/img/favicons/apple-touch-icon-120.png">
+  <link rel="apple-touch-icon" type="image/png" sizes="152x152" href="https://assets.habr.com/habr-web/img/favicons/apple-touch-icon-152.png">
+  <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="https://assets.habr.com/habr-web/img/favicons/apple-touch-icon-180.png">
+  <link rel="apple-touch-icon" type="image/png" sizes="256x256" href="https://assets.habr.com/habr-web/img/favicons/apple-touch-icon-256.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="https://assets.habr.com/habr-web/img/splashes/splash_1136x640.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="https://assets.habr.com/habr-web/img/splashes/splash_2436x1125.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="https://assets.habr.com/habr-web/img/splashes/splash_1792x828.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="https://assets.habr.com/habr-web/img/splashes/splash_828x1792.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="https://assets.habr.com/habr-web/img/splashes/splash_1334x750.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="https://assets.habr.com/habr-web/img/splashes/splash_1242x2668.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="https://assets.habr.com/habr-web/img/splashes/splash_2208x1242.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="https://assets.habr.com/habr-web/img/splashes/splash_1125x2436.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="https://assets.habr.com/habr-web/img/splashes/splash_1242x2208.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="https://assets.habr.com/habr-web/img/splashes/splash_2732x2048.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: landscape)" href="https://assets.habr.com/habr-web/img/splashes/splash_2688x1242.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="https://assets.habr.com/habr-web/img/splashes/splash_2224x1668.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="https://assets.habr.com/habr-web/img/splashes/splash_750x1334.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="https://assets.habr.com/habr-web/img/splashes/splash_2048x2732.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="https://assets.habr.com/habr-web/img/splashes/splash_2388x1668.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1112px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="https://assets.habr.com/habr-web/img/splashes/splash_1668x2224.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="https://assets.habr.com/habr-web/img/splashes/splash_640x1136.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="https://assets.habr.com/habr-web/img/splashes/splash_1668x2388.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="https://assets.habr.com/habr-web/img/splashes/splash_2048x1536.png">
+  <link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="https://assets.habr.com/habr-web/img/splashes/splash_1536x2048.png">
+  <link rel="mask-icon" color="#77a2b6" href="https://assets.habr.com/habr-web/img/favicons/apple-touch-icon-120.svg">
+  <link crossorigin="use-credentials" href="https://habr.com/manifest.webmanifest" rel="manifest">
+<script charset="utf-8" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/chunk-2d0e544c.js"></script><script charset="utf-8" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/lang.js"></script><script charset="utf-8" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/chunk-2d21ab85.js"></script><script charset="utf-8" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/hljs.js"></script><link rel="stylesheet" type="text/css" href="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/chunk-0b457fbc.css"><script charset="utf-8" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/chunk-0b457fbc.js"></script><link rel="stylesheet" type="text/css" href="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/chunk-8112ba00.css"><script charset="utf-8" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/chunk-8112ba00.js"></script><link rel="stylesheet" type="text/css" href="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/chunk-5ba1a40c.css"><script charset="utf-8" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/chunk-5ba1a40c.js"></script><link rel="stylesheet" type="text/css" href="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/gallery.css"><script charset="utf-8" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/gallery.js"></script><meta data-vue-meta="ssr" name="description" content="Довольно долго я обходился выгрузкой данных в Excel, но мода меняется, пользователи хотят в облака.
+
+Начав переводить ряд проектов на Python, решил, что самое время сменить (или дополнить) Excel..." data-vmid="description"><meta data-vue-meta="ssr" itemprop="description" content="Довольно долго я обходился выгрузкой данных в Excel, но мода меняется, пользователи хотят в облака.
+
+Начав переводить ряд проектов на Python, решил, что самое время сменить (или дополнить) Excel..." data-vmid="description:itemprop"><meta data-vue-meta="ssr" property="og:description" content="Довольно долго я обходился выгрузкой данных в Excel, но мода меняется, пользователи хотят в облака.
+
+Начав переводить ряд проектов на Python, решил, что самое время сменить (или дополнить) Excel..." data-vmid="og:description"><meta data-vue-meta="ssr" name="twitter:description" content="Довольно долго я обходился выгрузкой данных в Excel, но мода меняется, пользователи хотят в облака.
+
+Начав переводить ряд проектов на Python, решил, что самое время сменить (или дополнить) Excel..." data-vmid="twitter:description"><meta data-vue-meta="ssr" property="aiturec:description" content="Довольно долго я обходился выгрузкой данных в Excel, но мода меняется, пользователи хотят в облака.
+
+Начав переводить ряд проектов на Python, решил, что самое время сменить (или дополнить) Excel..." data-vmid="aiturec:description"><script data-vue-meta="ssr" onload="window['e0044d29c024'] = true" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/a_003.htm" data-vmid="checklogin"></script><script charset="utf-8" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/chunk-2d222042.js"></script><script charset="utf-8" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/photoswipe.js"></script><script charset="utf-8" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/chunk-2d21042a.js"></script><meta http-equiv="origin-trial" content="A88otRz1Fd3Nt567e2IYshC18LL3KGVXpVJW9oTCId4RYaygt23pbb4JqrbdIO/bwZPWEmRjBIRBu/bZbDR7Pg4AAABueyJvcmlnaW4iOiJodHRwczovL2ltYXNkay5nb29nbGVhcGlzLmNvbTo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MzQwODMxOTksImlzVGhpcmRQYXJ0eSI6dHJ1ZX0="><meta http-equiv="origin-trial" content="A0gCLbXCcL0R1Oc8tFPDs0G4Elz17w3zHp+Zst66+D17veE2o7fUcPsA114QtSTRqfVJLMeTSdeWOom0CcyCsgYAAAB7eyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MzQwODMxOTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="A9RQ+LxFazAousxUwSCzaihJjHLO1UyjQp0teZKHl7WdbVjPDfHSKMd6D/ZI5MTjqClFycbl70EFd7cBJWXqKQEAAACBeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MzQwODMxOTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="A6WKeWsdn1Ct+ZPqS9NCxxaiBoQ7wdTkK2/gE69Yu0gfBKJfo1gOvgkGmf5/xaIajT/RUb9AbnF1FsSZ47cCcQcAAACBeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MzQwODMxOTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="A04ZCu7yjrHgwQJK5ISHhH1DSg0qqowEay3n70KO6wV3D2Mj+OX3Kw20aSMitzgdG1xfrN7sOJV/dZIk+RvCzA4AAAB2eyJvcmlnaW4iOiJodHRwczovL2dvb2dsZS5jb206NDQzIiwiZmVhdHVyZSI6IlRydXN0VG9rZW5zIiwiZXhwaXJ5IjoxNjM0MDgzMTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A3HucHUo1oW9s+9kIKz8mLkbcmdaj5lxt3eiIMp1Nh49dkkBlg1Fhg4Fd/r0vL69mRRA36YutI9P/lJUfL8csQoAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiQ29udmVyc2lvbk1lYXN1cmVtZW50IiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A0OysezhLoCRYomumeYlubLurZTCmsjTb087OvtCy95jNM65cfEsbajrJnhaGwiTxhz38ZZbm+UhUwQuXfVPTg0AAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiQ29udmVyc2lvbk1lYXN1cmVtZW50IiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="AxoOxdZQmIoA1WeAPDixRAeWDdgs7ZtVFfH2y19ziTgD1iaHE5ZGz2UdSjubkWvob9C5PrjUfkWi4ZSLgWk3Xg8AAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiQ29udmVyc2lvbk1lYXN1cmVtZW50IiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="AwfG8hAcHnPa/kJ1Co0EvG/K0F9l1s2JZGiDLt2mhC3QI5Fh4qmsmSwrWObZFbRC9ieDaSLU6lHRxhGUF/i9sgoAAACBeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiSW50ZXJlc3RDb2hvcnRBUEkiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="AwQ7dCmHkvR6FuOFxAuNnktYSQrGbL4dF+eBkrwNLALc69Wr//PnO1yzns3pjUoCaYbKHtVcnng2hU+8OUm0PAYAAACHeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiSW50ZXJlc3RDb2hvcnRBUEkiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="AysVDPGQTLD/Scn78x4mLwB1tMfje5jwUpAAzGRpWsr1NzoN7MTFhT3ClmImi2svDZA7V6nWGIV8YTPsSRTe0wYAAACHeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiSW50ZXJlc3RDb2hvcnRBUEkiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><script src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/pubads_impl_2021071301.js" async=""></script><link rel="preload" href="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/integrator.js" as="script"><script type="text/javascript" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/integrator.js"></script><link rel="preload" href="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/integrator_002.js" as="script"><script type="text/javascript" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/integrator_002.js"></script></head>
+<body>
+
+
+<div id="app" data-async-called="true"><div class="tm-layout__wrapper"><!----><div></div><!----><header class="tm-header"><div class="tm-page-width"><div class="tm-header__container"><!----><span class="tm-header__logo-wrap"><a href="https://habr.com/ru/" class="tm-header__logo tm-header__logo_ru"><svg height="16" width="16" class="tm-svg-img tm-header__icon"><title>Хабр</title><use xlink:href="/img/habr-logo-ru.svg#logo"></use></svg></a><span class="tm-header__beta-sign" style="display:none;">β</span></span><div class="tm-dropdown tm-header__projects tm-projects_extra-margin"><div class="tm-dropdown__head"><button class="tm-header__dropdown-toggle"><svg height="16" width="16" class="tm-svg-img tm-header__icon tm-header__icon_dropdown"><title>Открыть список</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#arrow-down"></use></svg></button></div><!----></div><a href="https://habr.com/ru/sandbox/start/" class="tm-header__become-author-btn tm-header__become-author-btn_extra-margin">
+              Как стать автором
+            </a><!----><a href="https://effect.habr.com/s/cYouxSEeOZVbAHRAHMJbVA.13LAYB0KosJz8JoZDNsSI4pA-3cAPw_cr1gJl5V_ImPqua9nj7RVyZaEKrANG0d9ZxbosmolK9mJV--LQ5Wxjg" target="_blank" class="tm-top-link" style="color: rgb(153, 221, 255);">
+  FaaS как молоток: собираем гайды по работе с Serverless в отдельном хабе
+</a><!----></div></div></header><div class="tm-layout"><div class="tm-page-progress-bar"></div><div data-menu-sticky="true" class="tm-base-layout__header tm-base-layout__header_is-sticky"><div class="tm-page-width"><div class="tm-base-layout__header-wrapper"><div class="tm-main-menu"><div class="tm-main-menu__section"><nav class="tm-main-menu__section-content"><!----><a href="https://habr.com/ru/all/" class="tm-main-menu__item">
+        Все потоки
+      </a><a href="https://habr.com/ru/flows/develop/" class="tm-main-menu__item">
+          Разработка
+        </a><a href="https://habr.com/ru/flows/admin/" class="tm-main-menu__item">
+          Администрирование
+        </a><a href="https://habr.com/ru/flows/design/" class="tm-main-menu__item">
+          Дизайн
+        </a><a href="https://habr.com/ru/flows/management/" class="tm-main-menu__item">
+          Менеджмент
+        </a><a href="https://habr.com/ru/flows/marketing/" class="tm-main-menu__item">
+          Маркетинг
+        </a><a href="https://habr.com/ru/flows/popsci/" class="tm-main-menu__item">
+          Научпоп
+        </a></nav></div></div><div class="tm-header-user-menu tm-base-layout__user-menu"><a href="https://habr.com/ru/search/" class="tm-header-user-menu__item tm-header-user-menu__search"><svg height="24" width="24" class="tm-svg-img tm-header-user-menu__icon tm-header-user-menu__icon_search tm-header-user-menu__icon_dark"><title>Поиск</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#search"></use></svg></a><!----><!----><!----><div class="tm-header-user-menu__item tm-header-user-menu__user_desktop"><div class="tm-dropdown"><div class="tm-dropdown__head"><svg height="24" width="24" data-test-id="menu-toggle-guest" class="tm-svg-img tm-header-user-menu__icon"><title>Профиль</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#header-user"></use></svg><!----></div><!----></div><!----></div><!----></div></div></div></div><!----><div class="tm-page-width"><!----><!----><div class="tm-notification  tm-notification_static tm-notification_full"><div class="tm-base-layout__notification-title">
+          Новая версия Хабра
+        </div><p class="tm-base-layout__notification-text">Привет! Это 
+новый Хабр. Вернуть все как было вы&nbsp;можете с&nbsp;помощью ссылки 
+в&nbsp;подвале сайта. Но&nbsp;поддержка старой версии скоро будет 
+прекращена. Обо всех проблемах и&nbsp;сложностях пишите в&nbsp;<a class="link" href="https://habr.com/feedback/">саппорт</a>.</p><button type="button" class="tm-base-layout__notification-button btn btn_transparent btn_small">
+            Ок
+          </button></div><!----></div><main class="tm-layout__container"><div data-async-called="true" class="tm-page"><div class="tm-page-width"><!----><div class="tm-page__wrapper"><div class="tm-page__main tm-page__main_has-sidebar"><div class="pull-down"><div class="pull-down__header" style="height:0px;"><div class="pull-down__content" style="bottom:10px;"><svg height="24" width="24" class="tm-svg-img pull-down__arrow"><title>Обновить</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#pull-arrow"></use></svg></div></div><!----><div class="tm-page-article__body"><article class="tm-page-article__content tm-page-article__content_inner"><div class="tm-page-article__head-wrapper"><!----><div class="tm-article-snippet tm-page-article__snippet"><div class="tm-article-snippet__meta-container"><div class="tm-article-snippet__meta"><span class="tm-user-info tm-article-snippet__author"><a href="https://habr.com/ru/users/OvkHabr/" title="OvkHabr" class="tm-user-info__userpic"><div class="tm-entity-image"><img alt="" loading="lazy" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/beeea6d650108a27f89e42d95f086e84.jpg" class="tm-entity-image__pic" width="24" height="24"></div></a><span class="tm-user-info__user"><a href="https://habr.com/ru/users/OvkHabr/" class="tm-user-info__username">
+      OvkHabr
+    </a></span></span><span class="tm-article-snippet__datetime-published"><time datetime="2020-01-09T12:24:28.000Z" title="2020-01-09, 19:24">9  января  2020 в 19:24</time></span></div><!----></div><h1 class="tm-article-snippet__title tm-article-snippet__title_h1" lang="ru"><span>Начинаем работу с Google Sheets на Python. От регистрации до чтения данных</span></h1><div class="tm-article-snippet__hubs"><span class="tm-article-snippet__hubs-item"><a href="https://habr.com/ru/hub/python/" class="tm-article-snippet__hubs-item-link"><span>Python</span></a></span><span class="tm-article-snippet__hubs-item"><a href="https://habr.com/ru/hub/google_api/" class="tm-article-snippet__hubs-item-link"><span>Google API</span></a></span></div><div class="tm-article-snippet__labels"><div class="tm-article-snippet__label"><span>
+          Из песочницы
+        </span></div></div><!----><!----></div></div><!----><div class="tm-article-body" lang="ru"><div id="post-content-body" class="article-formatted-body article-formatted-body_version-1"><div xmlns="http://www.w3.org/1999/xhtml">Довольно долго я обходился выгрузкой данных в Excel, но мода меняется, пользователи хотят в облака.<br>
+<br>
+Начав переводить ряд проектов на Python, решил, что самое время сменить (или дополнить) Excel чем-то более современным.<br>
+<br>
+Когда я впервые столкнулся с необходимостью работы c таблицами Google из
+ Python, то пребывал в иллюзии, что все это можно сделать в пару кликов.
+ Реальность оказалась менее радужной, но другого глобуса у нас нет.<br>
+<br>
+Мне очень помогли статьи:<br>
+<br>
+<ul>
+<li><a href="https://habr.com/ru/post/305378">Генерируем красивую Google-таблицу из своей программы (используя Google Sheets API v4)</a></li>
+<li><a href="http://italylov.ru/blog/all/probuem-rabotat-s-google-sheets-api/">Начинаем работать с Google Sheets API v4/</a></li>
+<li><a href="http://datalytics.ru/all/rabotaem-s-api-google-drive-s-pomoschyu-python/">Работаем с API Google Drive с помощью Python</a></li>
+</ul><br>
+Как обычно – когда впервые за что-то берешься, то сталкиваешься с массой
+ вопросов, которые потом вызывают лишь недоумение – как можно было об 
+этом вообще задумываться. Элементарно же!<br>
+<br>
+Возможно, я просто шел длинным путем – буду рад, если вы меня поправите.<br>
+<br>
+Все действия выполнялись на компьютере с Windows + Python 3.6.6, также использовался Jupyter Notebook.<br>
+<br>
+Основные трудности у меня возникали на этапе предварительных настроек. Найти работоспособный код не представляет особого труда.<br>
+<br>
+Код, использованный в статье, доступен <a href="https://github.com/ovkgit/google_sheets_python">в репозитории</a><br>
+<a name="habracut"></a><br>
+<h2>Регистрация в сервисах Google и установка библиотек</h2><br>
+Для работы с таблицами нужно зарегистрироваться на Google, настроить проект и установить необходимые библиотеки.<br>
+<br>
+<a href="https://developers.google.com/sheets/">Официальная документация на английском языке находится здесь</a>.<br>
+<br>
+Сначала нужно зарегистрироваться на gmail.com (это вы можете сделать 
+самостоятельно). Потом нужно создать проект (так Google предоставляет 
+доступ к своим сервисам).<br>
+<br>
+Это долгий и нудный процесс, который позволяет понять, почему интерфейсы
+ от Google называют не самыми удобными и интуитивно понятными (некоторые
+ считают, что социальная сеть Google+ не взлетела именно по этой 
+причине).<br>
+<br>
+Для этого зайдите на страницу <a href="https://console.developers.google.com/cloud-resource-manager">console.developers.google.com/cloud-resource-manager</a> и нажать «Создать проект»<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/fi-wy693xsw54m-xh7jnh-17ble.jpeg" data-src="https://habrastorage.org/webt/fi/-w/y6/fi-wy693xsw54m-xh7jnh-17ble.jpeg" data-blurred="true"><br>
+<br>
+Введите имя проекта и нажмите «Создать»<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/pqliwqiudct5g7s6q_rm6iag6tw.jpeg" data-src="https://habrastorage.org/webt/pq/li/wq/pqliwqiudct5g7s6q_rm6iag6tw.jpeg" data-blurred="true"><br>
+<br>
+В обновленном списке проектов зайдите в меню «Права доступа»<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/3zprybr3paa7eqi5sxsurdt_aq8.jpeg" data-src="https://habrastorage.org/webt/3z/pr/yb/3zprybr3paa7eqi5sxsurdt_aq8.jpeg" data-blurred="true"><br>
+<br>
+В открывшемся окне нажмите «Добавить», внесите свой email с домена gmail.com и выберите группу «Проект» — «Владелец»<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/fu4aclu3gibqg8-1rae94sovf08.jpeg" data-src="https://habrastorage.org/webt/fu/4a/cl/fu4aclu3gibqg8-1rae94sovf08.jpeg" data-blurred="true"><br>
+<br>
+Сохраните изменения.<br>
+<br>
+Может показаться странным, что вы создали проект но вынуждены сами себе 
+выдавать права. И это на самом деле странно, но именно такой путь 
+пришлось пройти на момент написания этого курса, чтобы все начало 
+работать как надо.<br>
+<br>
+Снова зайдите на страницу <a href="https://console.developers.google.com/cloud-resource-manager">console.developers.google.com/cloud-resource-manager</a><br>
+<br>
+Выберите на своем проекте меню «Настройки»<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/_pdxalr_zhciudnkssxnej4iybo.jpeg" data-src="https://habrastorage.org/webt/_p/dx/al/_pdxalr_zhciudnkssxnej4iybo.jpeg" data-blurred="true"><br>
+<br>
+В открывшемся окне выберите «Сервисные аккаунты», а затем «Создать сервисный аккаунт»<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/8esst-mi2_3ioiylkv5ej1itpxu.jpeg" data-src="https://habrastorage.org/webt/8e/ss/t-/8esst-mi2_3ioiylkv5ej1itpxu.jpeg" data-blurred="true"><br>
+<br>
+Введите название аккаунта и нажмите «Создать»<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/4hfe18ts9ywn44bevocl3-fpsue.jpeg" data-src="https://habrastorage.org/webt/4h/fe/18/4hfe18ts9ywn44bevocl3-fpsue.jpeg" data-blurred="true"><br>
+<br>
+Выберите роль «Владелец» и нажмите «Продолжить»<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/0xd9sxloeigykugl41pdx_qgp64.jpeg" data-src="https://habrastorage.org/webt/0x/d9/sx/0xd9sxloeigykugl41pdx_qgp64.jpeg" data-blurred="true"><br>
+<br>
+В появившемся окне нажмите «Создать ключ»<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/pvjcxkvp6mjwda30w3uorjkbex4.jpeg" data-src="https://habrastorage.org/webt/pv/jc/xk/pvjcxkvp6mjwda30w3uorjkbex4.jpeg" data-blurred="true"><br>
+<br>
+Выберите тип ключа «json» и нажмите «Создать»<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/75sz3lffo7nr8119jrpu-vvm1i8.jpeg" data-src="https://habrastorage.org/webt/75/sz/3l/75sz3lffo7nr8119jrpu-vvm1i8.jpeg" data-blurred="true"><br>
+<br>
+Будет создан и сразу же скачан файл с ключами. Сохраните его, именно благодаря ему мы сможем получать доступ к сервисам Google.<br>
+<br>
+Нажмите на кнопку с тремя горизонтальными штрихами, слева от надписи 
+«Google APIs», выберите пункт «API и сервисы», а в нем подпункт «Панель 
+управления».<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/n90cgh2hyrqigsxjus02cwhrt-c.jpeg" data-src="https://habrastorage.org/webt/n9/0c/gh/n90cgh2hyrqigsxjus02cwhrt-c.jpeg" data-blurred="true"><br>
+<br>
+В открывшемся окне нажмите «Включить API и сервисы»<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/w83fwcm2h2zcq4qza3pysyjhseu.jpeg" data-src="https://habrastorage.org/webt/w8/3f/wc/w83fwcm2h2zcq4qza3pysyjhseu.jpeg" data-blurred="true"><br>
+<br>
+Введите в строку поиска «google drive» и кликните на сервисе «Google Drive API»<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/fjksiwvxazgd-6erfruqwrwq8os.jpeg" data-src="https://habrastorage.org/webt/fj/ks/iw/fjksiwvxazgd-6erfruqwrwq8os.jpeg" data-blurred="true"><br>
+<br>
+Нажмите «Включить»<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/jkf-ysfiu--oqojyf8vi1lwphao.jpeg" data-src="https://habrastorage.org/webt/jk/f-/ys/jkf-ysfiu--oqojyf8vi1lwphao.jpeg" data-blurred="true"><br>
+<br>
+Сайт уведомит вас, что API включено и предупредит, что нужно создать 
+учетные данные. Игнорируйте это предупреждение (ведь мы уже создали 
+сервисный аккаунт).<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/see4z4tacpn3manmkn_tixgkgck.jpeg" data-src="https://habrastorage.org/webt/se/e4/z4/see4z4tacpn3manmkn_tixgkgck.jpeg" data-blurred="true"><br>
+<br>
+Снова заходите в панель управления<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/c0aklnjxew9zwlph6fgp1ym-yt8.jpeg" data-src="https://habrastorage.org/webt/c0/ak/ln/c0aklnjxew9zwlph6fgp1ym-yt8.jpeg" data-blurred="true"><br>
+<br>
+В открывшемся окне нажмите «Включить API и сервисы»<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/w83fwcm2h2zcq4qza3pysyjhseu.jpeg" data-src="https://habrastorage.org/webt/w8/3f/wc/w83fwcm2h2zcq4qza3pysyjhseu.jpeg" data-blurred="true"><br>
+<br>
+Введите в строку поиска «sheet» и кликните на сервисе «Google Sheets API»<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/Task09_17.jpg" data-src="http://img/Task09_17.jpg" data-blurred="true"><br>
+<br>
+Убедитесь, что это API подключено. Оно должно включиться автоматически, 
+при подключении Google Drive API. Если оно подключено, вы увидите кнопку
+ «Управление API», если нет — кнопку «Включить». Включите его, при 
+необходимости.<br>
+<br>
+В последний раз зайдите на страницу <a href="https://console.developers.google.com/cloud-resource-manager">console.developers.google.com/cloud-resource-manager</a><br>
+<br>
+Выберите на своем проекте меню «Настройки»<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/ovuei6xocepbhtqmgs8ydb9tbt4.jpeg" data-src="https://habrastorage.org/webt/ov/ue/i6/ovuei6xocepbhtqmgs8ydb9tbt4.jpeg" data-blurred="true"><br>
+В открывшемся окне выберите «Сервисные аккаунты», а затем скопируйте и 
+сохраните email сервисного аккаунта. Он пригодится вам, чтобы выдавать 
+доступ к таблицам.<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/qhp5yrn74itkqnbwkvtstlcjwha.jpeg" data-src="https://habrastorage.org/webt/qh/p5/yr/qhp5yrn74itkqnbwkvtstlcjwha.jpeg" data-blurred="true"><br>
+<br>
+Теперь переходим к установке библиотек. Выполните в консоли команду<br>
+<br>
+<pre><code class="bash hljs">pip3 install --upgrade google-api-python-client</code></pre><br>
+а затем<br>
+<br>
+<pre><code class="bash hljs">pip3 install oauth2client</code></pre><br>
+Возможно, что при запуске второй команды вы получите сообщение, что библиотека oauth2client уже установлена.<br>
+<br>
+Зайдите на страницу <a href="https://raw.githubusercontent.com/gsuitedevs/python-samples/master/sheets/quickstart/quickstart.py">raw.githubusercontent.com/gsuitedevs/python-samples/master/sheets/quickstart/quickstart.py</a><br>
+<br>
+Нажмите правую кнопку мышки и выберите «Сохранить как»<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/t7z5mvudm8lmipgvbcxsjn6jsr4.jpeg" data-src="https://habrastorage.org/webt/t7/z5/mv/t7z5mvudm8lmipgvbcxsjn6jsr4.jpeg" data-blurred="true"><br>
+<br>
+Сохраните файл под именем quickstart.py<br>
+<br>
+и запустите его командой<br>
+<br>
+<pre><code class="python hljs">python quickstart.py</code></pre><br>
+Откроется новая страница в браузере (возможно, он скажет, что страница 
+небезопасная, но смело идите вперед) и вам надо будет принять условия.<br>
+<br>
+На этом наш путь завершен.<br>
+<br>
+<h2>Заполнение и форматирование таблицы</h2><br>
+Создадим первую таблицу<br>
+<br>
+<pre><code class="python hljs"><span class="hljs-comment"># Подключаем библиотеки</span>
+<span class="hljs-keyword">import</span> httplib2 
+<span class="hljs-keyword">import</span> apiclient.discovery
+<span class="hljs-keyword">from</span> oauth2client.service_account <span class="hljs-keyword">import</span> ServiceAccountCredentials	
+
+CREDENTIALS_FILE = <span class="hljs-string">'seraphic-effect-248407-7ac2c44ec709.json'</span>  <span class="hljs-comment"># Имя файла с закрытым ключом, вы должны подставить свое</span>
+
+<span class="hljs-comment"># Читаем ключи из файла</span>
+credentials = ServiceAccountCredentials.from_json_keyfile_name(CREDENTIALS_FILE, [<span class="hljs-string">'https://www.googleapis.com/auth/spreadsheets'</span>, <span class="hljs-string">'https://www.googleapis.com/auth/drive'</span>])
+
+httpAuth = credentials.authorize(httplib2.Http()) <span class="hljs-comment"># Авторизуемся в системе</span>
+service = apiclient.discovery.build(<span class="hljs-string">'sheets'</span>, <span class="hljs-string">'v4'</span>, http = httpAuth) <span class="hljs-comment"># Выбираем работу с таблицами и 4 версию API </span>
+
+spreadsheet = service.spreadsheets().create(body = {
+    <span class="hljs-string">'properties'</span>: {<span class="hljs-string">'title'</span>: <span class="hljs-string">'Первый тестовый документ'</span>, <span class="hljs-string">'locale'</span>: <span class="hljs-string">'ru_RU'</span>},
+    <span class="hljs-string">'sheets'</span>: [{<span class="hljs-string">'properties'</span>: {<span class="hljs-string">'sheetType'</span>: <span class="hljs-string">'GRID'</span>,
+                               <span class="hljs-string">'sheetId'</span>: <span class="hljs-number">0</span>,
+                               <span class="hljs-string">'title'</span>: <span class="hljs-string">'Лист номер один'</span>,
+                               <span class="hljs-string">'gridProperties'</span>: {<span class="hljs-string">'rowCount'</span>: <span class="hljs-number">100</span>, <span class="hljs-string">'columnCount'</span>: <span class="hljs-number">15</span>}}}]
+}).execute()
+spreadsheetId = spreadsheet[<span class="hljs-string">'spreadsheetId'</span>] <span class="hljs-comment"># сохраняем идентификатор файла</span>
+print(<span class="hljs-string">'https://docs.google.com/spreadsheets/d/'</span> + spreadsheetId)
+</code></pre><br>
+Если все прошло без ошибок — на экран будет выведена ссылка на таблицу. <br>
+<br>
+В этой ссылки использован идентификатор файла, мы сохраняем его в переменной spreadsheetId и будем использовать в дальнейшем. <br>
+<br>
+Переходите по ней. Google сообщит вам, что у вас нет доступа<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/y0n7te-mweqjhzr_9eg0gqsj50q.jpeg" data-src="https://habrastorage.org/webt/y0/n7/te/y0n7te-mweqjhzr_9eg0gqsj50q.jpeg" data-blurred="true"><br>
+<br>
+Не запрашивайте разрешение! Вам придет уведомление, что невозможно 
+доставить письмо с запросом на адрес, который сам Google назначил 
+системному аккаунту. А изменить этот адрес нельзя. Возможно, это не 
+работает только в бесплатном режиме.<br>
+<br>
+Но мы можем выдать себе доступ через Google Drive. Вам нужно заменить адрес my_test_address@gmail.com на свой.<br>
+<br>
+<pre><code class="python hljs">driveService = apiclient.discovery.build(<span class="hljs-string">'drive'</span>, <span class="hljs-string">'v3'</span>, http = httpAuth) <span class="hljs-comment"># Выбираем работу с Google Drive и 3 версию API</span>
+access = driveService.permissions().create(
+    fileId = spreadsheetId,
+    body = {<span class="hljs-string">'type'</span>: <span class="hljs-string">'user'</span>, <span class="hljs-string">'role'</span>: <span class="hljs-string">'writer'</span>, <span class="hljs-string">'emailAddress'</span>: <span class="hljs-string">'my_test_address@gmail.com'</span>},  <span class="hljs-comment"># Открываем доступ на редактирование</span>
+    fields = <span class="hljs-string">'id'</span>
+).execute()</code></pre><br>
+Теперь у вас есть доступ, не закрывайте таблицу, мы будем управлять ею и сразу же смотреть на изменения.<br>
+<br>
+У каждого документа есть свой код — spreadsheetId — именно от 
+отображается в адресной строке, когда мы открываем таблицу в браузере (в
+ URL-е страницы с открытой таблицей он находится между 
+«https://docs.google.com/spreadsheets/d/» и «/edit#gid=0»).<br>
+<br>
+Мы сохранили его в переменной spreadsheetId и дальше будем с ним работать.<br>
+<br>
+Сначала немного теории.<br>
+<br>
+В каждом файле (spreadsheet) находятся листы-вкладки (sheet).<br>
+<br>
+Каждый sheet имеет свой числовой код (sheetId). У первого созданного в 
+документе листа этот Id равен 0. Остальные листы имеют сильно отличные 
+от нуля Id (т.е. они не нумеруются подряд).<br>
+<br>
+Убедимся в этом<br>
+<br>
+<pre><code class="python hljs"><span class="hljs-comment"># Добавление листа</span>
+results = service.spreadsheets().batchUpdate(
+    spreadsheetId = spreadsheetId,
+    body = 
+{
+  <span class="hljs-string">"requests"</span>: [
+    {
+      <span class="hljs-string">"addSheet"</span>: {
+        <span class="hljs-string">"properties"</span>: {
+          <span class="hljs-string">"title"</span>: <span class="hljs-string">"Еще один лист"</span>,
+          <span class="hljs-string">"gridProperties"</span>: {
+            <span class="hljs-string">"rowCount"</span>: <span class="hljs-number">20</span>,
+            <span class="hljs-string">"columnCount"</span>: <span class="hljs-number">12</span>
+          }
+        }
+      }
+    }
+  ]
+}).execute()
+
+
+<span class="hljs-comment"># Получаем список листов, их Id и название</span>
+spreadsheet = service.spreadsheets().get(spreadsheetId = spreadsheetId).execute()
+sheetList = spreadsheet.get(<span class="hljs-string">'sheets'</span>)
+<span class="hljs-keyword">for</span> sheet <span class="hljs-keyword">in</span> sheetList:
+    print(sheet[<span class="hljs-string">'properties'</span>][<span class="hljs-string">'sheetId'</span>], sheet[<span class="hljs-string">'properties'</span>][<span class="hljs-string">'title'</span>])
+    
+sheetId = sheetList[<span class="hljs-number">0</span>][<span class="hljs-string">'properties'</span>][<span class="hljs-string">'sheetId'</span>]
+
+print(<span class="hljs-string">'Мы будем использовать лист с Id = '</span>, sheetId)
+</code></pre><br>
+На экране появится нечто вроде:<br>
+<br>
+<blockquote>0 Лист номер один<br>
+415832263 Еще один лист<br>
+Мы будем использовать лист с Id = 0</blockquote><br>
+<br>
+В самом деле, первый лист имеет Id равный нулю, а второй пронумерован иначе.<br>
+<br>
+Еще один вопрос: как указывать диапазоны ячеек. Видимо, таблицы Google 
+разрабатывали разные команды, под руководством разных менеджеров и при 
+помощи разных архитекторов. Потому, что координаты ячеек задаются двумя 
+разными способами.<br>
+<br>
+Вариант 1: в формате текста «Лист номер один!B2:D5», т.е. имя листа, 
+после него восклицательный знак, после — левая верхняя ячейка в формате 
+«буква (колонка) + цифра (строка)» + правая нижняя ячейка в таком же 
+формате.<br>
+<br>
+<pre><code class="python hljs">{<span class="hljs-string">"range"</span>: <span class="hljs-string">"Лист номер один!B2:D5"</span>}</code></pre><br>
+Вариант 2: в json-формате, с указанием ID листа и координат левой 
+верхней и правой нижней ячеек в числовом виде (номер строки и номер 
+столбца)<br>
+<br>
+<pre><code class="python hljs">{<span class="hljs-string">"range"</span>:
+    {
+    <span class="hljs-string">"sheetId"</span>: sheetId, <span class="hljs-comment"># ID листа</span>
+    <span class="hljs-string">"startRowIndex"</span>: <span class="hljs-number">1</span>, <span class="hljs-comment"># Со строки номер startRowIndex </span>
+    <span class="hljs-string">"endRowIndex"</span>: <span class="hljs-number">5</span>,<span class="hljs-comment"># по endRowIndex - 1 (endRowIndex не входит!)</span>
+    <span class="hljs-string">"startColumnIndex"</span>: <span class="hljs-number">0</span>, <span class="hljs-comment"># Со столбца номер startColumnIndex </span>
+    <span class="hljs-string">"endColumnIndex"</span>: <span class="hljs-number">1</span> <span class="hljs-comment"># по endColumnIndex - 1</span>
+    }}</code></pre><br>
+Разные функции используют разные форматы.<br>
+<br>
+Теперь мы знаем достаточно, чтобы заполнить ячейки данными, нарисовать рамку и выделить заголовки.<br>
+<br>
+<pre><code class="python hljs">results = service.spreadsheets().values().batchUpdate(spreadsheetId = spreadsheetId, body = {
+    <span class="hljs-string">"valueInputOption"</span>: <span class="hljs-string">"USER_ENTERED"</span>, <span class="hljs-comment"># Данные воспринимаются, как вводимые пользователем (считается значение формул)</span>
+    <span class="hljs-string">"data"</span>: [
+        {<span class="hljs-string">"range"</span>: <span class="hljs-string">"Лист номер один!B2:D5"</span>,
+         <span class="hljs-string">"majorDimension"</span>: <span class="hljs-string">"ROWS"</span>,     <span class="hljs-comment"># Сначала заполнять строки, затем столбцы</span>
+         <span class="hljs-string">"values"</span>: [
+                    [<span class="hljs-string">"Ячейка B2"</span>, <span class="hljs-string">"Ячейка C2"</span>, <span class="hljs-string">"Ячейка D2"</span>], <span class="hljs-comment"># Заполняем первую строку</span>
+                    [<span class="hljs-string">'25'</span>, <span class="hljs-string">"=6*6"</span>, <span class="hljs-string">"=sin(3,14/2)"</span>]  <span class="hljs-comment"># Заполняем вторую строку</span>
+                   ]}
+    ]
+}).execute()</code></pre><br>
+Заполняем несколько ячеек данными. Т.к. указан параметр USER_ENTERED, 
+таблица воспринимает эти данные так, как восприняла бы ввод руками 
+пользователя — преобразует числовые значения в числа, а значения, 
+начинающиеся со знака «равно» в формулы.<br>
+<br>
+Посмотрите в вашу таблицу, она заполнилась данными<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/ob3hh_l6npzamjxabctqph8lrny.jpeg" data-src="https://habrastorage.org/webt/ob/3h/h_/ob3hh_l6npzamjxabctqph8lrny.jpeg" data-blurred="true"><br>
+<br>
+Зададим ширину колонок. Функция batchUpdate может принимать несколько 
+команд сразу, так что мы одним запросом установим ширину трех групп 
+колонок. В первой и третьей группе одна колонка, а во второй — две.<br>
+<br>
+<pre><code class="python hljs">results = service.spreadsheets().batchUpdate(spreadsheetId = spreadsheetId, body = {
+  <span class="hljs-string">"requests"</span>: [
+
+    <span class="hljs-comment"># Задать ширину столбца A: 20 пикселей</span>
+    {
+      <span class="hljs-string">"updateDimensionProperties"</span>: {
+        <span class="hljs-string">"range"</span>: {
+          <span class="hljs-string">"sheetId"</span>: sheetId,
+          <span class="hljs-string">"dimension"</span>: <span class="hljs-string">"COLUMNS"</span>,  <span class="hljs-comment"># Задаем ширину колонки</span>
+          <span class="hljs-string">"startIndex"</span>: <span class="hljs-number">0</span>, <span class="hljs-comment"># Нумерация начинается с нуля</span>
+          <span class="hljs-string">"endIndex"</span>: <span class="hljs-number">1</span> <span class="hljs-comment"># Со столбца номер startIndex по endIndex - 1 (endIndex не входит!)</span>
+        },
+        <span class="hljs-string">"properties"</span>: {
+          <span class="hljs-string">"pixelSize"</span>: <span class="hljs-number">20</span> <span class="hljs-comment"># Ширина в пикселях</span>
+        },
+        <span class="hljs-string">"fields"</span>: <span class="hljs-string">"pixelSize"</span> <span class="hljs-comment"># Указываем, что нужно использовать параметр pixelSize  </span>
+      }
+    },
+
+    <span class="hljs-comment"># Задать ширину столбцов B и C: 150 пикселей</span>
+    {
+      <span class="hljs-string">"updateDimensionProperties"</span>: {
+        <span class="hljs-string">"range"</span>: {
+          <span class="hljs-string">"sheetId"</span>: sheetId,
+          <span class="hljs-string">"dimension"</span>: <span class="hljs-string">"COLUMNS"</span>,
+          <span class="hljs-string">"startIndex"</span>: <span class="hljs-number">1</span>,
+          <span class="hljs-string">"endIndex"</span>: <span class="hljs-number">3</span>
+        },
+        <span class="hljs-string">"properties"</span>: {
+          <span class="hljs-string">"pixelSize"</span>: <span class="hljs-number">150</span>
+        },
+        <span class="hljs-string">"fields"</span>: <span class="hljs-string">"pixelSize"</span>
+      }
+    },
+
+    <span class="hljs-comment"># Задать ширину столбца D: 200 пикселей</span>
+    {
+      <span class="hljs-string">"updateDimensionProperties"</span>: {
+        <span class="hljs-string">"range"</span>: {
+          <span class="hljs-string">"sheetId"</span>: sheetId,
+          <span class="hljs-string">"dimension"</span>: <span class="hljs-string">"COLUMNS"</span>,
+          <span class="hljs-string">"startIndex"</span>: <span class="hljs-number">3</span>,
+          <span class="hljs-string">"endIndex"</span>: <span class="hljs-number">4</span>
+        },
+        <span class="hljs-string">"properties"</span>: {
+          <span class="hljs-string">"pixelSize"</span>: <span class="hljs-number">200</span>
+        },
+        <span class="hljs-string">"fields"</span>: <span class="hljs-string">"pixelSize"</span>
+      }
+    }
+  ]
+}).execute()</code></pre><br>
+Посмотрите на таблицу, ширины колонок изменились.<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/wuzvh4jz9uloyxlkhfnxqk7otke.jpeg" data-src="https://habrastorage.org/webt/wu/zv/h4/wuzvh4jz9uloyxlkhfnxqk7otke.jpeg" data-blurred="true"><br>
+<br>
+Нарисуем рамку вокруг таблицы<br>
+<br>
+<pre><code class="python hljs"><span class="hljs-comment"># Рисуем рамку</span>
+results = service.spreadsheets().batchUpdate(
+    spreadsheetId = spreadsheetId,
+    body = {
+        <span class="hljs-string">"requests"</span>: [
+            {<span class="hljs-string">'updateBorders'</span>: {<span class="hljs-string">'range'</span>: {<span class="hljs-string">'sheetId'</span>: sheetId,
+                             <span class="hljs-string">'startRowIndex'</span>: <span class="hljs-number">1</span>,
+                             <span class="hljs-string">'endRowIndex'</span>: <span class="hljs-number">3</span>,
+                             <span class="hljs-string">'startColumnIndex'</span>: <span class="hljs-number">1</span>,
+                             <span class="hljs-string">'endColumnIndex'</span>: <span class="hljs-number">4</span>},
+                   <span class="hljs-string">'bottom'</span>: {  
+                   <span class="hljs-comment"># Задаем стиль для верхней границы</span>
+                              <span class="hljs-string">'style'</span>: <span class="hljs-string">'SOLID'</span>, <span class="hljs-comment"># Сплошная линия</span>
+                              <span class="hljs-string">'width'</span>: <span class="hljs-number">1</span>,       <span class="hljs-comment"># Шириной 1 пиксель</span>
+                              <span class="hljs-string">'color'</span>: {<span class="hljs-string">'red'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'green'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'blue'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'alpha'</span>: <span class="hljs-number">1</span>}}, <span class="hljs-comment"># Черный цвет</span>
+                   <span class="hljs-string">'top'</span>: { 
+                   <span class="hljs-comment"># Задаем стиль для нижней границы</span>
+                              <span class="hljs-string">'style'</span>: <span class="hljs-string">'SOLID'</span>,
+                              <span class="hljs-string">'width'</span>: <span class="hljs-number">1</span>,
+                              <span class="hljs-string">'color'</span>: {<span class="hljs-string">'red'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'green'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'blue'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'alpha'</span>: <span class="hljs-number">1</span>}},
+                   <span class="hljs-string">'left'</span>: { <span class="hljs-comment"># Задаем стиль для левой границы</span>
+                              <span class="hljs-string">'style'</span>: <span class="hljs-string">'SOLID'</span>,
+                              <span class="hljs-string">'width'</span>: <span class="hljs-number">1</span>,
+                              <span class="hljs-string">'color'</span>: {<span class="hljs-string">'red'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'green'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'blue'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'alpha'</span>: <span class="hljs-number">1</span>}},
+                   <span class="hljs-string">'right'</span>: { 
+                   <span class="hljs-comment"># Задаем стиль для правой границы</span>
+                              <span class="hljs-string">'style'</span>: <span class="hljs-string">'SOLID'</span>,
+                              <span class="hljs-string">'width'</span>: <span class="hljs-number">1</span>,
+                              <span class="hljs-string">'color'</span>: {<span class="hljs-string">'red'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'green'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'blue'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'alpha'</span>: <span class="hljs-number">1</span>}},
+                   <span class="hljs-string">'innerHorizontal'</span>: { 
+                   <span class="hljs-comment"># Задаем стиль для внутренних горизонтальных линий</span>
+                              <span class="hljs-string">'style'</span>: <span class="hljs-string">'SOLID'</span>,
+                              <span class="hljs-string">'width'</span>: <span class="hljs-number">1</span>,
+                              <span class="hljs-string">'color'</span>: {<span class="hljs-string">'red'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'green'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'blue'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'alpha'</span>: <span class="hljs-number">1</span>}},
+                   <span class="hljs-string">'innerVertical'</span>: { 
+                   <span class="hljs-comment"># Задаем стиль для внутренних вертикальных линий</span>
+                              <span class="hljs-string">'style'</span>: <span class="hljs-string">'SOLID'</span>,
+                              <span class="hljs-string">'width'</span>: <span class="hljs-number">1</span>,
+                              <span class="hljs-string">'color'</span>: {<span class="hljs-string">'red'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'green'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'blue'</span>: <span class="hljs-number">0</span>, <span class="hljs-string">'alpha'</span>: <span class="hljs-number">1</span>}}
+                              
+                              }}
+        ]
+    }).execute()
+</code></pre><br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/7v8ldbkjnukd2j6lukhezmaupje.jpeg" data-src="https://habrastorage.org/webt/7v/8l/db/7v8ldbkjnukd2j6lukhezmaupje.jpeg" data-blurred="true"><br>
+<br>
+Объединим ячейки над таблицей и впишем в них заголовок<br>
+<br>
+<pre><code class="python hljs"><span class="hljs-comment"># Объединяем ячейки A2:D1</span>
+results = service.spreadsheets().batchUpdate(
+    spreadsheetId = spreadsheetId,
+    body = {
+        <span class="hljs-string">"requests"</span>: [
+            {<span class="hljs-string">'mergeCells'</span>: {<span class="hljs-string">'range'</span>: {<span class="hljs-string">'sheetId'</span>: sheetId,
+                          <span class="hljs-string">'startRowIndex'</span>: <span class="hljs-number">0</span>,
+                          <span class="hljs-string">'endRowIndex'</span>: <span class="hljs-number">1</span>,
+                          <span class="hljs-string">'startColumnIndex'</span>: <span class="hljs-number">1</span>,
+                          <span class="hljs-string">'endColumnIndex'</span>: <span class="hljs-number">4</span>},
+                <span class="hljs-string">'mergeType'</span>: <span class="hljs-string">'MERGE_ALL'</span>}}
+        ]
+    }).execute()
+<span class="hljs-comment"># Добавляем заголовок таблицы</span>
+results = service.spreadsheets().values().batchUpdate(spreadsheetId = spreadsheetId, body = {
+    <span class="hljs-string">"valueInputOption"</span>: <span class="hljs-string">"USER_ENTERED"</span>,
+<span class="hljs-comment"># Данные воспринимаются, как вводимые пользователем (считается значение формул)</span>
+    <span class="hljs-string">"data"</span>: [
+        {<span class="hljs-string">"range"</span>: <span class="hljs-string">"Лист номер один!B1"</span>,
+         <span class="hljs-string">"majorDimension"</span>: <span class="hljs-string">"ROWS"</span>, <span class="hljs-comment"># Сначала заполнять строки, затем столбцы</span>
+         <span class="hljs-string">"values"</span>: [[<span class="hljs-string">"Заголовок таблицы"</span> ] 
+                   ]}
+    ]
+}).execute()
+</code></pre><br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/bapitq07wcnkdodrbmodxssvvl8.jpeg" data-src="https://habrastorage.org/webt/ba/pi/tq/bapitq07wcnkdodrbmodxssvvl8.jpeg" data-blurred="true"><br>
+<br>
+Установим формат у ячеек заголовка таблицы<br>
+<br>
+<pre><code class="python hljs"><span class="hljs-comment"># Установка формата ячеек</span>
+results = service.spreadsheets().batchUpdate(
+    spreadsheetId = spreadsheetId,
+    body = 
+{
+  <span class="hljs-string">"requests"</span>: 
+  [
+    {
+      <span class="hljs-string">"repeatCell"</span>: 
+      {
+        <span class="hljs-string">"cell"</span>: 
+        {
+          <span class="hljs-string">"userEnteredFormat"</span>: 
+          {
+            <span class="hljs-string">"horizontalAlignment"</span>: <span class="hljs-string">'CENTER'</span>,
+            <span class="hljs-string">"backgroundColor"</span>: {
+                <span class="hljs-string">"red"</span>: <span class="hljs-number">0.8</span>,
+                <span class="hljs-string">"green"</span>: <span class="hljs-number">0.8</span>,
+                <span class="hljs-string">"blue"</span>: <span class="hljs-number">0.8</span>,
+                <span class="hljs-string">"alpha"</span>: <span class="hljs-number">1</span>
+            },
+            <span class="hljs-string">"textFormat"</span>:
+             {
+               <span class="hljs-string">"bold"</span>: <span class="hljs-literal">True</span>,
+               <span class="hljs-string">"fontSize"</span>: <span class="hljs-number">14</span>
+             }
+          }
+        },
+        <span class="hljs-string">"range"</span>: 
+        {
+          <span class="hljs-string">"sheetId"</span>: sheetId,
+          <span class="hljs-string">"startRowIndex"</span>: <span class="hljs-number">1</span>,
+          <span class="hljs-string">"endRowIndex"</span>: <span class="hljs-number">2</span>,
+          <span class="hljs-string">"startColumnIndex"</span>: <span class="hljs-number">1</span>,
+          <span class="hljs-string">"endColumnIndex"</span>: <span class="hljs-number">4</span>
+        },
+        <span class="hljs-string">"fields"</span>: <span class="hljs-string">"userEnteredFormat"</span>
+      }
+    }
+  ]
+}).execute()
+</code></pre><br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/anmxixf0r8g3tgobvulohsg3w5i.jpeg" data-src="https://habrastorage.org/webt/an/mx/ix/anmxixf0r8g3tgobvulohsg3w5i.jpeg" data-blurred="true"><br>
+<br>
+Есть простой способ узнать, какую ширину или цвет нужно задать ячейке. 
+Для этого достаточно вручную отформатировать одну из ячеек и прочитать 
+ее свойства.<br>
+<br>
+<pre><code class="python hljs">ranges = [<span class="hljs-string">"Лист номер один!C2:C2"</span>] <span class="hljs-comment"># </span>
+          
+results = service.spreadsheets().get(spreadsheetId = spreadsheetId, 
+                                     ranges = ranges, includeGridData = <span class="hljs-literal">True</span>).execute()
+print(<span class="hljs-string">'Основные данные'</span>)
+print(results[<span class="hljs-string">'properties'</span>])
+print(<span class="hljs-string">'\nЗначения и раскраска'</span>)
+print(results[<span class="hljs-string">'sheets'</span>][<span class="hljs-number">0</span>][<span class="hljs-string">'data'</span>][<span class="hljs-number">0</span>][<span class="hljs-string">'rowData'</span>] )
+print(<span class="hljs-string">'\nВысота ячейки'</span>)
+print(results[<span class="hljs-string">'sheets'</span>][<span class="hljs-number">0</span>][<span class="hljs-string">'data'</span>][<span class="hljs-number">0</span>][<span class="hljs-string">'rowMetadata'</span>])
+print(<span class="hljs-string">'\nШирина ячейки'</span>)
+print(results[<span class="hljs-string">'sheets'</span>][<span class="hljs-number">0</span>][<span class="hljs-string">'data'</span>][<span class="hljs-number">0</span>][<span class="hljs-string">'columnMetadata'</span>])
+</code></pre><br>
+Получаем в ответ<br>
+<blockquote>Основные данные<br>
+{'title': 'Первый тестовый документ', 'locale': 'ru_RU', 'autoRecalc': 
+'ON_CHANGE', 'timeZone': 'Etc/GMT', 'defaultFormat': {'backgroundColor':
+ {'red': 1, 'green': 1, 'blue': 1}, 'padding': {'top': 2, 'right': 3, 
+'bottom': 2, 'left': 3}, 'verticalAlignment': 'BOTTOM', 'wrapStrategy': 
+'OVERFLOW_CELL', 'textFormat': {'foregroundColor': {}, 'fontFamily': 
+'arial,sans,sans-serif', 'fontSize': 10, 'bold': False, 'italic': False,
+ 'strikethrough': False, 'underline': False}}}<br>
+<br>
+Значения и раскраска<br>
+[{'values': [{'userEnteredValue': {'stringValue': 'Ячейка C2'}, 
+'effectiveValue': {'stringValue': 'Ячейка C2'}, 'formattedValue': 
+'Ячейка C2', 'userEnteredFormat': {'backgroundColor': {'red': 1, 
+'green': 0.6}, 'horizontalAlignment': 'CENTER', 'textFormat': 
+{'fontSize': 14, 'bold': True, 'italic': True}}, 'effectiveFormat': 
+{'backgroundColor': {'red': 1, 'green': 0.6}, 'padding': {'top': 2, 
+'right': 3, 'bottom': 2, 'left': 3}, 'horizontalAlignment': 'CENTER', 
+'verticalAlignment': 'BOTTOM', 'wrapStrategy': 'OVERFLOW_CELL', 
+'textFormat': {'foregroundColor': {}, 'fontFamily': 'Arial', 'fontSize':
+ 14, 'bold': True, 'italic': True, 'strikethrough': False, 'underline': 
+False}, 'hyperlinkDisplayType': 'PLAIN_TEXT'}}]}]<br>
+<br>
+Высота ячейки<br>
+[{'pixelSize': 21}]<br>
+<br>
+Ширина ячейки<br>
+[{'pixelSize': 150}]<br>
+</blockquote> Этот код выведет свойства ячейки C2. Можно выбрать шрифт и
+ цвет заливки вручную (в таблице), в потом увидеть, как они отражаются в
+ json.<br>
+<br>
+<h2>Чтение данных из таблицы</h2><br>
+Чтобы особенности чтения данных проявились в полной мере, я вручную заполнил ячейки B4, C7 и D5 как показано на рисунке.<br>
+<br>
+<img src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/msycphwvaxu8x49rvc2vq6zwdfo.jpeg" data-src="https://habrastorage.org/webt/ms/yc/ph/msycphwvaxu8x49rvc2vq6zwdfo.jpeg" data-blurred="true"><br>
+<br>
+Код для чтения данных<br>
+<br>
+<pre><code class="python hljs">ranges = [<span class="hljs-string">"Лист номер один!A2:F8"</span>] <span class="hljs-comment"># </span>
+          
+results = service.spreadsheets().values().batchGet(spreadsheetId = spreadsheetId, 
+                                     ranges = ranges, 
+                                     valueRenderOption = <span class="hljs-string">'FORMATTED_VALUE'</span>,  
+                                     dateTimeRenderOption = <span class="hljs-string">'FORMATTED_STRING'</span>).execute() 
+sheet_values = results[<span class="hljs-string">'valueRanges'</span>][<span class="hljs-number">0</span>][<span class="hljs-string">'values'</span>]
+print(sheet_values)</code></pre><br>
+Результат<br>
+<blockquote>[['', 'Ячейка B2', 'Ячейка C2', 'Ячейка D2'], ['', '25', '36', '0,9999996829']]</blockquote><br>
+Некоторые параметры функции: <i>valueRenderOption</i> — формат чтения числовых данных.<br>
+<br>
+<ul>
+<li><b>FORMATTED_VALUE</b> — чтение с учетом формата отображения. Т.е. 
+что было видно в таблице, то и прочитается. Например, в ячейке D3 число 
+0,9999999, но выбран формат «два знака после запятой», поэтому 
+отображается «1,00», именно в таком формате оно и прочитается.</li>
+<li><b>UNFORMATTED_VALUE</b> — читается содержимое ячейки, без учета настроек форматирование (т.е. прочиталось бы 0,9999999)</li>
+<li><b>FORMULA</b> — отображается формула (в этом случае «=sin(3,14/2)». Если в ячейке введено число, то в этом режиме оно и прочитается.</li>
+</ul><br>
+Этот код читает данные и построчно выводит их на экран. Читаемый диапазон A2:F8.<br>
+Как видно на экране:<br>
+<br>
+<ul>
+<li>Если ни одна ячейка в читаемой строке не заполнена — данные по строке не выводятся.</li>
+<li>Данные после последней заполненной ячейки не выводятся.</li>
+</ul></div></div><div aria-hidden="true" role="dialog" tabindex="-1" class="pswp"><div class="pswp__bg"></div><div class="pswp__scroll-wrap"><div class="pswp__container"><div class="pswp__item"></div><div class="pswp__item"></div><div class="pswp__item"></div></div><div class="pswp__ui pswp__ui--hidden"><div class="pswp__top-bar"><span class="tm-svg-icon__wrapper pswp__button pswp__button--close"><svg height="16" width="16" class="tm-svg-img tm-svg-icon"><title>Закрыть</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#close"></use></svg></span><div class="pswp__preloader"><div class="pswp__preloader__icn"><div class="pswp__preloader__cut"><div class="pswp__preloader__donut"></div></div></div></div></div></div></div></div><!----></div><div class="tm-article-body__tags"><div class="tm-article-body__tags-links"><span class="tm-article-body__tags-title">Теги:</span><span class="tm-article-body__tags-item"><a href="https://habr.com/ru/search/?target_type=posts&amp;order=relevance&amp;q=%5Bpython%5D" class="tm-article-body__tags-item-link">python</a></span><span class="tm-article-body__tags-item"><a href="https://habr.com/ru/search/?target_type=posts&amp;order=relevance&amp;q=%5Bgoogle%20sheets%5D" class="tm-article-body__tags-item-link">google sheets</a></span><span class="tm-article-body__tags-item"><a href="https://habr.com/ru/search/?target_type=posts&amp;order=relevance&amp;q=%5Bgoogle%20api%5D" class="tm-article-body__tags-item-link">google api</a></span></div><div class="tm-article-body__tags-links"><span class="tm-article-body__tags-title">Хабы:</span><span class="tm-article-body__tags-item"><a href="https://habr.com/ru/hub/python/" class="tm-article-body__tags-item-link">
+                  Python
+                </a></span><span class="tm-article-body__tags-item"><a href="https://habr.com/ru/hub/google_api/" class="tm-article-body__tags-item-link">
+                  Google API
+                </a></span></div></div></article><div class="tm-article__icons-wrapper"><div class="tm-data-icons tm-page-article__counters-panel"><div class="tm-article-rating tm-data-icons__item"><div class="tm-votes-meter tm-article-rating__votes-switcher"><svg height="16" width="16" class="tm-svg-img tm-votes-meter__icon tm-votes-meter__icon_medium"><title>Всего голосов 9: ↑9 и ↓0</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-rating"></use></svg><span title="Всего голосов 9: ↑9 и ↓0" class="tm-votes-meter__value tm-votes-meter__value_positive tm-votes-meter__value_medium">+9</span></div><div class="v-portal" style="display:none;"></div></div><!----><span title="Количество просмотров" class="tm-icon-counter tm-data-icons__item"><svg height="16" width="16" class="tm-svg-img tm-icon-counter__icon"><title>Просмотры</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-views"></use></svg><span class="tm-icon-counter__value">57K</span></span><button type="button" class="bookmarks-button tm-data-icons__item"><span title="Добавить в закладки" class="tm-svg-icon__wrapper bookmarks-button__icon"><svg height="16" width="16" class="tm-svg-img tm-svg-icon"><title>Добавить в закладки</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-favorite"></use></svg></span><span title="Количество пользователей, добавивших публикацию в закладки" class="bookmarks-button__counter">
+    251
+  </span></button><!----><div title="Поделиться" class="tm-sharing tm-data-icons__item"><button type="button" class="tm-sharing__button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="tm-sharing__icon"><path fill="currentColor" d="M10.33.275l9.047 7.572a.2.2 0 010 .306l-9.048 7.572a.2.2 0 01-.328-.153V11c-8 0-9.94 6-9.94 6S-1 5 10 5V.428a.2.2 0 01.328-.153z"></path></svg></button><!----></div><div class="v-portal" style="display:none;"></div></div><!----></div></div><!----><div class="tm-page-article__additional-blocks"><div class="tm-editoral-subscription"><span class="tm-svg-icon__wrapper tm-editoral-subscription__close"><svg height="16" width="16" class="tm-svg-img tm-svg-icon"><title>Закрыть</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#close"></use></svg></span><h3 class="tm-editoral-subscription__title">
+    Редакторский дайджест
+  </h3><p class="tm-editoral-subscription__description">
+    Присылаем лучшие статьи раз&nbsp;в&nbsp;месяц
+  </p><form method="GET" class="tm-editoral-subscription__form"><div class="tm-input-text-decorated tm-editoral-subscription__input tm-input-text-decorated_has-label-after" name="email" placeholder="Электропочта" type="email"><!----><input name="email" placeholder="Электропочта" type="email" class="tm-input-text-decorated__input"><div class="tm-input-text-decorated__label tm-input-text-decorated__label_after"><button type="submit" class="tm-editoral-subscription__icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class=""><path fill="currentColor" clip-rule="evenodd" d="M19.707 11.293a1 1 0 010 1.414l-5.5 5.5a1 1 0 01-1.414-1.414L16.586 13H5a1 1 0 110-2h11.586l-3.793-3.793a1 1 0 011.414-1.414l5.5 5.5z"></path></svg></button></div></div><!----></form></div><section class="tm-block tm-block_spacing-bottom"><!----><div class="tm-block__body"><div class="tm-article-author tm-page-article__author"><!----><div data-async-called="true" class="tm-user-card tm-article-author__user-card tm-user-card_variant-two-column"><div class="tm-user-card__info-container"><div class="tm-user-card__header"><div class="tm-user-card__header-data"><a href="https://habr.com/ru/users/OvkHabr/" class="tm-user-card__userpic tm-user-card__userpic_size-40"><div class="tm-entity-image"><img alt="" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/beeea6d650108a27f89e42d95f086e84_002.jpg" class="tm-entity-image__pic"></div></a><div class="tm-user-card__meta"><div title=" 20 голосов " class="tm-karma tm-user-card__karma"><div class="tm-karma__votes tm-karma__votes_positive">
+    16
+  </div><div class="tm-karma__text">
+    Карма
+  </div></div><div title="Рейтинг пользователя" class="tm-rating tm-user-card__rating"><div class="tm-rating__header"><div class="tm-rating__counter">0</div></div><div class="tm-rating__text">
+    Рейтинг
+  </div></div></div></div></div><div class="tm-user-card__info"><div class="tm-user-card__title"><span class="tm-user-card__name">Кулюкин Олег</span><a href="https://habr.com/ru/users/OvkHabr/" class="tm-user-card__nickname">
+          @OvkHabr
+        </a><!----></div><p class="tm-user-card__short-info">Разработка ПО, финансы, анализ данных</p></div></div><div class="tm-user-card__buttons tm-user-card__buttons_variant-two-column"><!----><!----><button type="submit" class="tm-user-card__button btn btn_transparent btn_small">
+      Задонатить
+    </button><!----><!----></div></div><!----></div></div><!----></section><div><!----><div class="tm-article-comments"><div class="tm-comments"><div class="tm-comments__wrapper"><header class="tm-comments__header"><h2 class="tm-comments__title">
+        Комментарии
+        <span class="tm-comments__comments-count">
+          4
+        </span></h2><div class="tm-comments__header-aside"><button class="tm-rss-button tm-rss-button_comments-header"><span class="tm-svg-icon__wrapper tm-rss-button__icon"><svg height="16" width="16" class="tm-svg-img tm-svg-icon"><title>Скопировать ссылку на RSS</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#rss"></use></svg></span></button><!----></div></header><div class="tm-comments__inner"><div><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><div class="tm-placeholder tm-placeholder__comment tm-placeholder__comment_"><!----><div class="tm-placeholder__user"><div class="tm-placeholder__user-pic loads"></div><div class="tm-placeholder__user-date loads"></div><div class="tm-placeholder__user-score loads"></div></div><div class="tm-placeholder__article-title loads" style="width: 99%;"></div><div class="tm-placeholder__article-title loads" style="width: 92%;"></div></div><div class="tm-placeholder tm-placeholder__comment tm-placeholder__comment_"><!----><div class="tm-placeholder__user"><div class="tm-placeholder__user-pic loads"></div><div class="tm-placeholder__user-date loads"></div><div class="tm-placeholder__user-score loads"></div></div><div class="tm-placeholder__article-title loads" style="width: 90%;"></div><div class="tm-placeholder__article-title loads" style="width: 86%;"></div></div><div class="tm-placeholder tm-placeholder__comment tm-placeholder__comment_"><!----><div class="tm-placeholder__user"><div class="tm-placeholder__user-pic loads"></div><div class="tm-placeholder__user-date loads"></div><div class="tm-placeholder__user-score loads"></div></div><div class="tm-placeholder__article-title loads" style="width: 90%;"></div><div class="tm-placeholder__article-title loads" style="width: 91%;"></div></div><!----><!----><!----><!----></div></div></div><!----></div></div></div><div class="tm-ad-banner__container tm-page-article__banner"><!----><div id="articleBottomBanner" class="tm-ad-banner" data-google-query-id="CIuBv9a47vECFYACogMdLBQHjg"></div></div><section class="tm-block tm-block_spacing-around"><header class="tm-block__header"><h2 class="tm-block__title">Похожие публикации</h2><!----></header><div class="tm-block__body"><ul class="tm-article-list-block__list"><li class="tm-article-list-block__item"><article class="tm-article-snippet-block-block tm-article-snippet-block-block_preview"><div class="tm-article-snippet-block__user-meta"><div class="tm-article-snippet-block__date"><time datetime="2021-06-08T09:00:02.000Z" title="2021-06-08, 16:00">8  июня   в 16:00</time></div></div><h2 class="tm-article-title tm-article-title_block"><a href="https://habr.com/ru/company/macloud/blog/561472/" class="tm-article-title__link"><span>Реализация подписки на обновления с помощью Google Sheets, Netlify Functions и React. Часть 2</span></a></h2><div class="tm-data-icons"><!----><div class="tm-votes-meter tm-data-icons__item"><svg height="16" width="16" class="tm-svg-img tm-votes-meter__icon tm-votes-meter__icon_small"><title>Всего голосов 10: ↑7 и ↓3</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-rating"></use></svg><span title="Всего голосов 10: ↑7 и ↓3" class="tm-votes-meter__value tm-votes-meter__value_positive tm-votes-meter__value_small">+4</span></div><span class="tm-icon-counter tm-data-icons__item" title="Количество просмотров"><svg height="16" width="16" class="tm-svg-img tm-icon-counter__icon"><title>Просмотры</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-views"></use></svg><span class="tm-icon-counter__value">772</span></span><button type="button" class="bookmarks-button tm-data-icons__item"><span title="Добавить в закладки" class="tm-svg-icon__wrapper bookmarks-button__icon"><svg height="16" width="16" class="tm-svg-img tm-svg-icon"><title>Добавить в закладки</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-favorite"></use></svg></span><span title="Количество пользователей, добавивших публикацию в закладки" class="bookmarks-button__counter">
+    11
+  </span></button><div class="tm-article-comments-counter-link tm-data-icons__item" title="Читать комментарии"><a href="https://habr.com/ru/company/macloud/blog/561472/comments/" class="tm-article-comments-counter-link__link"><svg height="16" width="16" class="tm-svg-img tm-article-comments-counter-link__icon"><title>Комментарии</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-comments"></use></svg><span class="tm-article-comments-counter-link__value">
+      0
+    </span></a><!----></div><!----><div class="v-portal" style="display: none;"></div></div></article></li><li class="tm-article-list-block__item"><article class="tm-article-snippet-block-block tm-article-snippet-block-block_preview"><div class="tm-article-snippet-block__user-meta"><div class="tm-article-snippet-block__date"><time datetime="2021-06-04T07:00:01.000Z" title="2021-06-04, 14:00">4  июня   в 14:00</time></div></div><h2 class="tm-article-title tm-article-title_block"><a href="https://habr.com/ru/company/macloud/blog/560932/" class="tm-article-title__link"><span>Реализация подписки на обновления с помощью Google Sheets, Netlify Functions и React. Часть 1</span></a></h2><div class="tm-data-icons"><!----><div class="tm-votes-meter tm-data-icons__item"><svg height="16" width="16" class="tm-svg-img tm-votes-meter__icon tm-votes-meter__icon_small"><title>Всего голосов 12: ↑7 и ↓5</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-rating"></use></svg><span title="Всего голосов 12: ↑7 и ↓5" class="tm-votes-meter__value tm-votes-meter__value_positive tm-votes-meter__value_small">+2</span></div><span class="tm-icon-counter tm-data-icons__item" title="Количество просмотров"><svg height="16" width="16" class="tm-svg-img tm-icon-counter__icon"><title>Просмотры</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-views"></use></svg><span class="tm-icon-counter__value">1.3K</span></span><button type="button" class="bookmarks-button tm-data-icons__item"><span title="Добавить в закладки" class="tm-svg-icon__wrapper bookmarks-button__icon"><svg height="16" width="16" class="tm-svg-img tm-svg-icon"><title>Добавить в закладки</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-favorite"></use></svg></span><span title="Количество пользователей, добавивших публикацию в закладки" class="bookmarks-button__counter">
+    17
+  </span></button><div class="tm-article-comments-counter-link tm-data-icons__item" title="Читать комментарии"><a href="https://habr.com/ru/company/macloud/blog/560932/comments/" class="tm-article-comments-counter-link__link"><svg height="16" width="16" class="tm-svg-img tm-article-comments-counter-link__icon"><title>Комментарии</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-comments"></use></svg><span class="tm-article-comments-counter-link__value">
+      0
+    </span></a><!----></div><!----><div class="v-portal" style="display: none;"></div></div></article></li><li class="tm-article-list-block__item"><article class="tm-article-snippet-block-block tm-article-snippet-block-block_preview"><div class="tm-article-snippet-block__user-meta"><div class="tm-article-snippet-block__date"><time datetime="2016-05-13T13:33:19.000Z" title="2016-05-13, 19:33">13  мая  2016 в 19:33</time></div></div><h2 class="tm-article-title tm-article-title_block"><a href="https://habr.com/ru/post/283418/" class="tm-article-title__link"><span>RTKLib + Python + Google Maps JS API. Делаем свой навигатор</span></a></h2><div class="tm-data-icons"><!----><div class="tm-votes-meter tm-data-icons__item"><svg height="16" width="16" class="tm-svg-img tm-votes-meter__icon tm-votes-meter__icon_small"><title>Всего голосов 11: ↑11 и ↓0</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-rating"></use></svg><span title="Всего голосов 11: ↑11 и ↓0" class="tm-votes-meter__value tm-votes-meter__value_positive tm-votes-meter__value_small">+11</span></div><span class="tm-icon-counter tm-data-icons__item" title="Количество просмотров"><svg height="16" width="16" class="tm-svg-img tm-icon-counter__icon"><title>Просмотры</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-views"></use></svg><span class="tm-icon-counter__value">21K</span></span><button type="button" class="bookmarks-button tm-data-icons__item"><span title="Добавить в закладки" class="tm-svg-icon__wrapper bookmarks-button__icon"><svg height="16" width="16" class="tm-svg-img tm-svg-icon"><title>Добавить в закладки</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-favorite"></use></svg></span><span title="Количество пользователей, добавивших публикацию в закладки" class="bookmarks-button__counter">
+    93
+  </span></button><div class="tm-article-comments-counter-link tm-data-icons__item" title="Читать комментарии"><a href="https://habr.com/ru/post/283418/comments/" class="tm-article-comments-counter-link__link"><svg height="16" width="16" class="tm-svg-img tm-article-comments-counter-link__icon"><title>Комментарии</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-comments"></use></svg><span class="tm-article-comments-counter-link__value">
+      11
+    </span></a><!----></div><!----><div class="v-portal" style="display: none;"></div></div></article></li><!----></ul></div><!----></section><section class="tm-block tm-block_spacing-around"><header class="tm-block__header"><h2 class="tm-block__title">Минуточку внимания</h2><div class="tm-block__header-aside"><a href="https://tmtm.ru/megapost/" target="_blank" class="tm-block-extralink">
+      Разместить
+    </a></div></header><div class="tm-block__body"><div pagination="" slides-per-view="1" class="tm-promo-block__content-wrapper"><div class="tm-promo-block__item-wrapper"><a href="https://effect.habr.com/s/iD1du0N785aDh4IYgSSJxg.kMxOImyc6ZMqBnafm72mQjgHpmCyyh2I7AojwMmYThX8WL76irwuhaGM6brlcHKH-dF9agzu7N15JFsfFq6oVNHw324MIJKpurT3ni_DX0k" rel="nofollow " class="tm-promo-block__item tm-article-title__link"><header class="tm-promo-block__head"><div class="tm-promo-block__image-wrapper"><img alt="" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/IQhxMnSLlTebcJ06gNAgTw.jpg" class="tm-promo-block__image"></div><div class="tm-promo-block__label">
+              Мегапост
+              <!----></div></header><div class="tm-promo-block__info"><h3 class="tm-promo-block__title">А ты думал, в сказку попал? В другие миры – через холодильник</h3></div></a></div><div class="tm-promo-block__item-wrapper"><a href="https://effect.habr.com/s/xywNEDmofDyCnF-cUSab3g.thZI6wNtSy1t3EXgMQ_MhRz36AUrC8K20xtHLatJ-wRsJK44c5gjgfrnI9h_0UqKf5HHqxBstTZeepUm1LI7og" rel="nofollow sponsored" class="tm-promo-block__item tm-article-title__link"><header class="tm-promo-block__head"><div class="tm-promo-block__image-wrapper"><img alt="" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/cdlGnU-ZrU22M5IUBAC5lQ.jpg" class="tm-promo-block__image"></div><div class="tm-promo-block__label">
+              Промо
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 11 11" class="tm-block-promo__external"><path fill="currentColor" d="M7.5 0a.5.5 0 000 1h1.793L5.146 5.146a.5.5 0 10.708.708L10 1.707V3.5a.5.5 0 001 0v-3a.5.5 0 00-.5-.5h-3zm-7 1a.5.5 0 00-.5.5v9a.5.5 0 00.5.5h9a.5.5 0 00.5-.5V6a.5.5 0 00-1 0v4H1V2h4a.5.5 0 000-1H.5z"></path></svg></div></header><div class="tm-promo-block__info"><h3 class="tm-promo-block__title">Много рыбы: производительность, стабильность, надёжность</h3></div></a></div><div class="tm-promo-block__item-wrapper"><a href="https://effect.habr.com/s/ow-I69B1VFQ4N1OZSM1t0Q.WAMxrFzILrBmL76pIhXdclssoCjgB-qHI7wNZOKt4kcuXEts2CBeW8_uRT_sIc49WuGV8LfE6TBy_cr0hZFafQ" rel="nofollow " class="tm-promo-block__item tm-article-title__link"><header class="tm-promo-block__head"><div class="tm-promo-block__image-wrapper"><img alt="" src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/CCYpBeBoKvra8-n3HHDnoQ.png" class="tm-promo-block__image"></div><div class="tm-promo-block__label">
+              Мегатест
+              <!----></div></header><div class="tm-promo-block__info"><h3 class="tm-promo-block__title">Любовь, код и роботы в тесте на знание Python</h3></div></a></div></div></div><!----></section><div class="tm-projects-blocks tm-articles-list__promo-block tm-projects-blocks_tasks"><div class="tm-projects-blocks__header"><div class="tm-projects-blocks__title"><a href="https://freelance.habr.com/tasks?utm_campaign=tasks_postlist&amp;utm_content=tasks&amp;utm_medium=habr_block&amp;utm_source=habr_mob" rel="noopener" target="_blank" class="tm-projects-blocks__title-link">
+        Заказы
+      </a></div></div><div class="tm-projects-blocks__content"><div class="tm-project-blocks-items" should-show-company="true"><div class="tm-project-blocks-items__item"><a href="http://freelance.habr.com/tasks/377313?utm_campaign=tasks_postlist&amp;utm_content=course&amp;utm_medium=habr_block&amp;utm_source=habr_mob" rel="noopener" target="_blank" class="tm-project-blocks-items__detail tm-project-blocks-items__title"><!---->Написание скрипта для Simple-scada
+    </a><div class="tm-project-blocks-items__properties"><span class="tm-project-blocks-items__property-item">4000 руб./за проект</span><span class="tm-project-blocks-items__property-item">9 просмотров</span></div></div><div class="tm-project-blocks-items__item"><a href="http://freelance.habr.com/tasks/377301?utm_campaign=tasks_postlist&amp;utm_content=course&amp;utm_medium=habr_block&amp;utm_source=habr_mob" rel="noopener" target="_blank" class="tm-project-blocks-items__detail tm-project-blocks-items__title"><!---->Создать автоответчика Discord с пересылкой сообщений в ТГ
+    </a><div class="tm-project-blocks-items__properties"><span class="tm-project-blocks-items__property-item">40000 руб./за проект</span><span class="tm-project-blocks-items__property-item">12 откликов</span><span class="tm-project-blocks-items__property-item">38 просмотров</span></div></div><div class="tm-project-blocks-items__item"><a href="http://freelance.habr.com/tasks/377293?utm_campaign=tasks_postlist&amp;utm_content=course&amp;utm_medium=habr_block&amp;utm_source=habr_mob" rel="noopener" target="_blank" class="tm-project-blocks-items__detail tm-project-blocks-items__title"><!---->Разработать android лайфстайл приложение
+    </a><div class="tm-project-blocks-items__properties"><span class="tm-project-blocks-items__property-item">75000 руб./за проект</span><span class="tm-project-blocks-items__property-item">3 отклика</span><span class="tm-project-blocks-items__property-item">31 просмотр</span></div></div><div class="tm-project-blocks-items__item"><a href="http://freelance.habr.com/tasks/377289?utm_campaign=tasks_postlist&amp;utm_content=course&amp;utm_medium=habr_block&amp;utm_source=habr_mob" rel="noopener" target="_blank" class="tm-project-blocks-items__detail tm-project-blocks-items__title"><!---->Дописать программу на Python
+    </a><div class="tm-project-blocks-items__properties"><span class="tm-project-blocks-items__property-item">500 руб./за проект</span><span class="tm-project-blocks-items__property-item">5 откликов</span><span class="tm-project-blocks-items__property-item">59 просмотров</span></div></div><div class="tm-project-blocks-items__item"><a href="http://freelance.habr.com/tasks/377269?utm_campaign=tasks_postlist&amp;utm_content=course&amp;utm_medium=habr_block&amp;utm_source=habr_mob" rel="noopener" target="_blank" class="tm-project-blocks-items__detail tm-project-blocks-items__title"><!---->Обучить новичка блокчейн разработе (Ethereum)
+    </a><div class="tm-project-blocks-items__properties"><span class="tm-project-blocks-items__property-item">1000 руб./в час</span><span class="tm-project-blocks-items__property-item">1 отклик</span><span class="tm-project-blocks-items__property-item">32 просмотра</span></div></div></div></div><div class="tm-projects-blocks__footer"><a href="https://freelance.habr.com/tasks?utm_campaign=tasks_postlist&amp;utm_content=tasks_all&amp;utm_medium=habr_block&amp;utm_source=habr_mob" rel="noopener" target="_blank" class="tm-projects-blocks__link">
+      Больше заказов на Хабр Фрилансе
+    </a></div></div><section class="tm-block tm-block_spacing-around"><header class="tm-block__header"><h2 class="tm-block__title">Лучшие публикации за сутки</h2><!----></header><div class="tm-block__body"><ul class="tm-article-list-block__list"><li class="tm-article-list-block__item"><article class="tm-article-snippet-block-block tm-article-snippet-block-block_preview"><div class="tm-article-snippet-block__user-meta"><div class="tm-article-snippet-block__date"><time datetime="2021-07-18T10:55:24.000Z" title="2021-07-18, 17:55">вчера в 17:55</time></div></div><h2 class="tm-article-title tm-article-title_block"><a href="https://habr.com/ru/company/lamptest/blog/568290/" class="tm-article-title__link"><span>IKEA прекратила продажу батареек Alkalisk</span></a></h2><div class="tm-data-icons"><!----><div class="tm-votes-meter tm-data-icons__item"><svg height="16" width="16" class="tm-svg-img tm-votes-meter__icon tm-votes-meter__icon_small"><title>Всего голосов 40: ↑38 и ↓2</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-rating"></use></svg><span title="Всего голосов 40: ↑38 и ↓2" class="tm-votes-meter__value tm-votes-meter__value_positive tm-votes-meter__value_small">+36</span></div><span title="Количество просмотров" class="tm-icon-counter tm-data-icons__item"><svg height="16" width="16" class="tm-svg-img tm-icon-counter__icon"><title>Просмотры</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-views"></use></svg><span class="tm-icon-counter__value">18K</span></span><button type="button" class="bookmarks-button tm-data-icons__item"><span title="Добавить в закладки" class="tm-svg-icon__wrapper bookmarks-button__icon"><svg height="16" width="16" class="tm-svg-img tm-svg-icon"><title>Добавить в закладки</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-favorite"></use></svg></span><span title="Количество пользователей, добавивших публикацию в закладки" class="bookmarks-button__counter">
+    19
+  </span></button><div title="Читать комментарии" class="tm-article-comments-counter-link tm-data-icons__item"><a href="https://habr.com/ru/company/lamptest/blog/568290/comments/" class="tm-article-comments-counter-link__link"><svg height="16" width="16" class="tm-svg-img tm-article-comments-counter-link__icon"><title>Комментарии</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-comments"></use></svg><span class="tm-article-comments-counter-link__value">
+      50
+    </span></a><!----></div><!----><div class="v-portal" style="display:none;"></div></div></article></li><li class="tm-article-list-block__item"><article class="tm-article-snippet-block-block tm-article-snippet-block-block_preview"><div class="tm-article-snippet-block__user-meta"><div class="tm-article-snippet-block__date"><time datetime="2021-07-18T14:01:01.000Z" title="2021-07-18, 21:01">вчера в 21:01</time></div></div><h2 class="tm-article-title tm-article-title_block"><a href="https://habr.com/ru/company/ruvds/blog/567152/" class="tm-article-title__link"><span>Bash-функции и их имена, которые могут быть практически всем чем угодно</span></a></h2><div class="tm-data-icons"><!----><div class="tm-votes-meter tm-data-icons__item"><svg height="16" width="16" class="tm-svg-img tm-votes-meter__icon tm-votes-meter__icon_small"><title>Всего голосов 23: ↑23 и ↓0</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-rating"></use></svg><span title="Всего голосов 23: ↑23 и ↓0" class="tm-votes-meter__value tm-votes-meter__value_positive tm-votes-meter__value_small">+23</span></div><span title="Количество просмотров" class="tm-icon-counter tm-data-icons__item"><svg height="16" width="16" class="tm-svg-img tm-icon-counter__icon"><title>Просмотры</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-views"></use></svg><span class="tm-icon-counter__value">3.4K</span></span><button type="button" class="bookmarks-button tm-data-icons__item"><span title="Добавить в закладки" class="tm-svg-icon__wrapper bookmarks-button__icon"><svg height="16" width="16" class="tm-svg-img tm-svg-icon"><title>Добавить в закладки</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-favorite"></use></svg></span><span title="Количество пользователей, добавивших публикацию в закладки" class="bookmarks-button__counter">
+    39
+  </span></button><div title="Читать комментарии" class="tm-article-comments-counter-link tm-data-icons__item"><a href="https://habr.com/ru/company/ruvds/blog/567152/comments/" class="tm-article-comments-counter-link__link"><svg height="16" width="16" class="tm-svg-img tm-article-comments-counter-link__icon"><title>Комментарии</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-comments"></use></svg><span class="tm-article-comments-counter-link__value">
+      1
+    </span></a><!----></div><!----><div class="v-portal" style="display:none;"></div></div></article></li><li class="tm-article-list-block__item"><article class="tm-article-snippet-block-block tm-article-snippet-block-block_preview"><div class="tm-article-snippet-block__user-meta"><div class="tm-article-snippet-block__date"><time datetime="2021-07-18T10:03:02.000Z" title="2021-07-18, 17:03">вчера в 17:03</time></div></div><h2 class="tm-article-title tm-article-title_block"><a href="https://habr.com/ru/company/ruvds/blog/567880/" class="tm-article-title__link"><span>Эффект Даннинга-Крюгера — не то, чем кажется или Почему деление на умных и глупых — само по себе глупость</span></a></h2><div class="tm-data-icons"><!----><div class="tm-votes-meter tm-data-icons__item"><svg height="16" width="16" class="tm-svg-img tm-votes-meter__icon tm-votes-meter__icon_small"><title>Всего голосов 75: ↑48 и ↓27</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-rating"></use></svg><span title="Всего голосов 75: ↑48 и ↓27" class="tm-votes-meter__value tm-votes-meter__value_positive tm-votes-meter__value_small">+21</span></div><span title="Количество просмотров" class="tm-icon-counter tm-data-icons__item"><svg height="16" width="16" class="tm-svg-img tm-icon-counter__icon"><title>Просмотры</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-views"></use></svg><span class="tm-icon-counter__value">14K</span></span><button type="button" class="bookmarks-button tm-data-icons__item"><span title="Добавить в закладки" class="tm-svg-icon__wrapper bookmarks-button__icon"><svg height="16" width="16" class="tm-svg-img tm-svg-icon"><title>Добавить в закладки</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-favorite"></use></svg></span><span title="Количество пользователей, добавивших публикацию в закладки" class="bookmarks-button__counter">
+    88
+  </span></button><div title="Читать комментарии" class="tm-article-comments-counter-link tm-data-icons__item"><a href="https://habr.com/ru/company/ruvds/blog/567880/comments/" class="tm-article-comments-counter-link__link"><svg height="16" width="16" class="tm-svg-img tm-article-comments-counter-link__icon"><title>Комментарии</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-comments"></use></svg><span class="tm-article-comments-counter-link__value">
+      109
+    </span></a><!----></div><!----><div class="v-portal" style="display:none;"></div></div></article></li><li class="tm-article-list-block__item"><article class="tm-article-snippet-block-block tm-article-snippet-block-block_preview"><div class="tm-article-snippet-block__user-meta"><div class="tm-article-snippet-block__date"><time datetime="2021-07-18T12:37:14.000Z" title="2021-07-18, 19:37">вчера в 19:37</time></div></div><h2 class="tm-article-title tm-article-title_block"><a href="https://habr.com/ru/post/568298/" class="tm-article-title__link"><span>Закрепление в Linux. Linux Persistence</span></a></h2><div class="tm-data-icons"><!----><div class="tm-votes-meter tm-data-icons__item"><svg height="16" width="16" class="tm-svg-img tm-votes-meter__icon tm-votes-meter__icon_small"><title>Всего голосов 22: ↑20 и ↓2</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-rating"></use></svg><span title="Всего голосов 22: ↑20 и ↓2" class="tm-votes-meter__value tm-votes-meter__value_positive tm-votes-meter__value_small">+18</span></div><span title="Количество просмотров" class="tm-icon-counter tm-data-icons__item"><svg height="16" width="16" class="tm-svg-img tm-icon-counter__icon"><title>Просмотры</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-views"></use></svg><span class="tm-icon-counter__value">4K</span></span><button type="button" class="bookmarks-button tm-data-icons__item"><span title="Добавить в закладки" class="tm-svg-icon__wrapper bookmarks-button__icon"><svg height="16" width="16" class="tm-svg-img tm-svg-icon"><title>Добавить в закладки</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-favorite"></use></svg></span><span title="Количество пользователей, добавивших публикацию в закладки" class="bookmarks-button__counter">
+    64
+  </span></button><div title="Читать комментарии" class="tm-article-comments-counter-link tm-data-icons__item"><a href="https://habr.com/ru/post/568298/comments/" class="tm-article-comments-counter-link__link"><svg height="16" width="16" class="tm-svg-img tm-article-comments-counter-link__icon"><title>Комментарии</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-comments"></use></svg><span class="tm-article-comments-counter-link__value">
+      16
+    </span></a><!----></div><!----><div class="v-portal" style="display:none;"></div></div></article></li><li class="tm-article-list-block__item"><article class="tm-article-snippet-block-block tm-article-snippet-block-block_preview"><div class="tm-article-snippet-block__user-meta"><div class="tm-article-snippet-block__date"><time datetime="2021-07-18T13:24:57.000Z" title="2021-07-18, 20:24">вчера в 20:24</time></div></div><h2 class="tm-article-title tm-article-title_block"><a href="https://habr.com/ru/post/568314/" class="tm-article-title__link"><span>Дистанционный съем показаний со счетчиков</span></a></h2><div class="tm-data-icons"><!----><div class="tm-votes-meter tm-data-icons__item"><svg height="16" width="16" class="tm-svg-img tm-votes-meter__icon tm-votes-meter__icon_small"><title>Всего голосов 17: ↑17 и ↓0</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-rating"></use></svg><span title="Всего голосов 17: ↑17 и ↓0" class="tm-votes-meter__value tm-votes-meter__value_positive tm-votes-meter__value_small">+17</span></div><span title="Количество просмотров" class="tm-icon-counter tm-data-icons__item"><svg height="16" width="16" class="tm-svg-img tm-icon-counter__icon"><title>Просмотры</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-views"></use></svg><span class="tm-icon-counter__value">5.7K</span></span><button type="button" class="bookmarks-button tm-data-icons__item"><span title="Добавить в закладки" class="tm-svg-icon__wrapper bookmarks-button__icon"><svg height="16" width="16" class="tm-svg-img tm-svg-icon"><title>Добавить в закладки</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-favorite"></use></svg></span><span title="Количество пользователей, добавивших публикацию в закладки" class="bookmarks-button__counter">
+    74
+  </span></button><div title="Читать комментарии" class="tm-article-comments-counter-link tm-data-icons__item"><a href="https://habr.com/ru/post/568314/comments/" class="tm-article-comments-counter-link__link"><svg height="16" width="16" class="tm-svg-img tm-article-comments-counter-link__icon"><title>Комментарии</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-comments"></use></svg><span class="tm-article-comments-counter-link__value">
+      13
+    </span></a><!----></div><!----><div class="v-portal" style="display:none;"></div></div></article></li><!----></ul></div><!----></section><!----></div></div></div><div class="tm-page__sidebar"><div class="tm-layout-sidebar"><div class="tm-layout-sidebar__ads tm-layout-sidebar__ads_stick-top"><div class="tm-ad-banner__container tm-layout-sidebar__banner"><a href="https://tmtm.ru/services/advertising/" target="_blank" class="tm-ad-banner__title">
+    Реклама
+  </a><div id="sidebarBanner" class="tm-ad-banner" data-google-query-id="CKWHv9a47vECFTsgewodhPMGhQ"><div id="google_ads_iframe_/235032688/HH/HH01_ATF_Poster_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/235032688/HH/HH01_ATF_Poster_0" title="3rd party ad content" name="google_ads_iframe_/235032688/HH/HH01_ATF_Poster_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="2" data-load-complete="true" width="300" height="500" frameborder="0"></iframe></div></div></div></div><div class="tm-sexy-sidebar tm-sexy-sidebar_stick-top" style="margin-top:0px;"><section class="tm-block tm-block_spacing-around"><header class="tm-block__header"><h2 class="tm-block__title">Читают сейчас</h2><!----></header><div class="tm-block__body"><ul class="tm-article-list-block__list"><li class="tm-article-list-block__item"><article class="tm-article-snippet-block-sidebar tm-article-snippet-block-sidebar_preview"><!----><h2 class="tm-article-title tm-article-title_sidebar"><a href="https://habr.com/ru/company/lamptest/blog/568290/" class="tm-article-title__link"><span>IKEA прекратила продажу батареек Alkalisk</span></a></h2><div class="tm-data-icons"><!----><!----><span class="tm-icon-counter tm-data-icons__item" title="Количество просмотров"><svg height="16" width="16" class="tm-svg-img tm-icon-counter__icon"><title>Просмотры</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-views"></use></svg><span class="tm-icon-counter__value">18K</span></span><!----><div class="tm-article-comments-counter-link tm-data-icons__item" title="Читать комментарии"><a href="https://habr.com/ru/company/lamptest/blog/568290/comments/" class="tm-article-comments-counter-link__link"><svg height="16" width="16" class="tm-svg-img tm-article-comments-counter-link__icon"><title>Комментарии</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-comments"></use></svg><span class="tm-article-comments-counter-link__value">
+      50
+    </span></a><!----></div><!----><div class="v-portal" style="display: none;"></div></div></article></li><li class="tm-article-list-block__item"><article class="tm-article-snippet-block-sidebar tm-article-snippet-block-sidebar_preview"><!----><h2 class="tm-article-title tm-article-title_sidebar"><a href="https://habr.com/ru/post/568322/" class="tm-article-title__link"><span>Я просто хотел Андроид 1.5</span></a></h2><div class="tm-data-icons"><!----><!----><span class="tm-icon-counter tm-data-icons__item" title="Количество просмотров"><svg height="16" width="16" class="tm-svg-img tm-icon-counter__icon"><title>Просмотры</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-views"></use></svg><span class="tm-icon-counter__value">6.1K</span></span><!----><div class="tm-article-comments-counter-link tm-data-icons__item" title="Читать комментарии"><a href="https://habr.com/ru/post/568322/comments/" class="tm-article-comments-counter-link__link"><svg height="16" width="16" class="tm-svg-img tm-article-comments-counter-link__icon"><title>Комментарии</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-comments"></use></svg><span class="tm-article-comments-counter-link__value">
+      11
+    </span></a><!----></div><!----><div class="v-portal" style="display: none;"></div></div></article></li><li class="tm-article-list-block__item"><article class="tm-article-snippet-block-sidebar tm-article-snippet-block-sidebar_preview"><!----><h2 class="tm-article-title tm-article-title_sidebar"><a href="https://habr.com/ru/news/t/568350/" class="tm-article-title__link"><span>Amazon убедила Apple удалить из App Store приложение, обнаруживающее фейковые отзывы</span></a></h2><div class="tm-data-icons"><!----><!----><span class="tm-icon-counter tm-data-icons__item" title="Количество просмотров"><svg height="16" width="16" class="tm-svg-img tm-icon-counter__icon"><title>Просмотры</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-views"></use></svg><span class="tm-icon-counter__value">5.3K</span></span><!----><div class="tm-article-comments-counter-link tm-data-icons__item" title="Читать комментарии"><a href="https://habr.com/ru/news/t/568350/comments/" class="tm-article-comments-counter-link__link"><svg height="16" width="16" class="tm-svg-img tm-article-comments-counter-link__icon"><title>Комментарии</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-comments"></use></svg><span class="tm-article-comments-counter-link__value">
+      10
+    </span></a><!----></div><!----><div class="v-portal" style="display: none;"></div></div></article></li><li class="tm-article-list-block__item"><article class="tm-article-snippet-block-sidebar tm-article-snippet-block-sidebar_preview"><!----><h2 class="tm-article-title tm-article-title_sidebar"><a href="https://habr.com/ru/post/568148/" class="tm-article-title__link"><span>Растения I класса опасности. Памятка по идентификации</span></a></h2><div class="tm-data-icons"><!----><!----><span class="tm-icon-counter tm-data-icons__item" title="Количество просмотров"><svg height="16" width="16" class="tm-svg-img tm-icon-counter__icon"><title>Просмотры</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-views"></use></svg><span class="tm-icon-counter__value">48K</span></span><!----><div class="tm-article-comments-counter-link tm-data-icons__item" title="Читать комментарии"><a href="https://habr.com/ru/post/568148/comments/" class="tm-article-comments-counter-link__link"><svg height="16" width="16" class="tm-svg-img tm-article-comments-counter-link__icon"><title>Комментарии</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-comments"></use></svg><span class="tm-article-comments-counter-link__value">
+      70
+    </span></a><!----></div><!----><div class="v-portal" style="display: none;"></div></div></article></li><li class="tm-article-list-block__item"><article class="tm-article-snippet-block-sidebar tm-article-snippet-block-sidebar_preview"><!----><h2 class="tm-article-title tm-article-title_sidebar"><a href="https://habr.com/ru/company/ruvds/blog/567880/" class="tm-article-title__link"><span>Эффект Даннинга-Крюгера — не то, чем кажется или Почему деление на умных и глупых — само по себе глупость</span></a></h2><div class="tm-data-icons"><!----><!----><span class="tm-icon-counter tm-data-icons__item" title="Количество просмотров"><svg height="16" width="16" class="tm-svg-img tm-icon-counter__icon"><title>Просмотры</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-views"></use></svg><span class="tm-icon-counter__value">14K</span></span><!----><div class="tm-article-comments-counter-link tm-data-icons__item" title="Читать комментарии"><a href="https://habr.com/ru/company/ruvds/blog/567880/comments/" class="tm-article-comments-counter-link__link"><svg height="16" width="16" class="tm-svg-img tm-article-comments-counter-link__icon"><title>Комментарии</title><use xlink:href="/img/megazord-v24.4c3730a5.svg#counter-comments"></use></svg><span class="tm-article-comments-counter-link__value">
+      109
+    </span></a><!----></div><!----><div class="v-portal" style="display: none;"></div></div></article></li><li class="tm-article-list-block__item"><a href="https://u.habr.com/made_rn" class="tm-most-reading-block__promo-post">Назад в будущее: всмотреться в код и решить задачку от Великого ИИ</a><div class="tm-most-reading-block__label">Мегатест</div></li></ul></div><!----></section></div></div></div></div></div></div></main><!----></div><div class="tm-footer-menu"><div class="tm-page-width"><div class="tm-footer-menu__container"><div class="tm-footer-menu__block"><h3 class="tm-footer-menu__block-title">
+          Ваш аккаунт
+        </h3><div class="tm-footer-menu__block-content"><ul class="tm-footer-menu__list"><li class="tm-footer-menu__list-item"><a href="https://habr.com/kek/v1/auth/habrahabr/?back=/ru/post/483302/&amp;hl=ru" target="_self">
+                Войти
+              </a></li><li class="tm-footer-menu__list-item"><a href="https://habr.com/kek/v1/auth/habrahabr-register/?back=/ru/post/483302/&amp;hl=ru" target="_self">
+                Регистрация
+              </a></li></ul></div></div><div class="tm-footer-menu__block"><h3 class="tm-footer-menu__block-title">
+          Разделы
+        </h3><div class="tm-footer-menu__block-content"><ul class="tm-footer-menu__list"><li class="tm-footer-menu__list-item"><a href="https://habr.com/ru/" class="footer-menu__item-link router-link-active">
+                Публикации
+              </a></li><li class="tm-footer-menu__list-item"><a href="https://habr.com/ru/news/" class="footer-menu__item-link">
+                Новости
+              </a></li><li class="tm-footer-menu__list-item"><a href="https://habr.com/ru/hubs/" class="footer-menu__item-link">
+                Хабы
+              </a></li><li class="tm-footer-menu__list-item"><a href="https://habr.com/ru/companies/" class="footer-menu__item-link">
+                Компании
+              </a></li><li class="tm-footer-menu__list-item"><a href="https://habr.com/ru/users/" class="footer-menu__item-link">
+                Авторы
+              </a></li><li class="tm-footer-menu__list-item"><a href="https://habr.com/ru/sandbox/" class="footer-menu__item-link">
+                Песочница
+              </a></li></ul></div></div><div class="tm-footer-menu__block"><h3 class="tm-footer-menu__block-title">
+          Информация
+        </h3><div class="tm-footer-menu__block-content"><ul class="tm-footer-menu__list"><li class="tm-footer-menu__list-item"><a href="https://habr.com/ru/docs/help/" class="footer-menu__item-link">
+                Устройство сайта
+              </a></li><li class="tm-footer-menu__list-item"><a href="https://habr.com/ru/docs/authors/codex/" class="footer-menu__item-link">
+                Для авторов
+              </a></li><li class="tm-footer-menu__list-item"><a href="https://habr.com/ru/docs/companies/corpblogs/" class="footer-menu__item-link">
+                Для компаний
+              </a></li><li class="tm-footer-menu__list-item"><a href="https://habr.com/ru/docs/docs/transparency/" class="footer-menu__item-link">
+                Документы
+              </a></li><li class="tm-footer-menu__list-item"><a href="https://account.habr.com/info/agreement" target="_blank">
+                Соглашение
+              </a></li><li class="tm-footer-menu__list-item"><a href="https://account.habr.com/info/confidential/" target="_blank">
+                Конфиденциальность
+              </a></li></ul></div></div><div class="tm-footer-menu__block"><h3 class="tm-footer-menu__block-title">
+          Услуги
+        </h3><div class="tm-footer-menu__block-content"><ul class="tm-footer-menu__list"><li class="tm-footer-menu__list-item"><a href="https://docs.google.com/presentation/d/e/2PACX-1vQLwRfQmXibiUlWaRg-BAc38s7oM3lJiaPju7qmdJsp8ysIvZ_G-Npem0njJLMozE2bPHMpDqiI5hhy/pub?start=false&amp;loop=false&amp;delayms=60000&amp;slide=id.g91a03369cd_4_297" target="_blank">
+                Реклама
+              </a></li><li class="tm-footer-menu__list-item"><a href="https://habrastorage.org/storage/stuff/habr/service_price.pdf" target="_blank">
+                Тарифы
+              </a></li><li class="tm-footer-menu__list-item"><a href="https://docs.google.com/presentation/d/e/2PACX-1vQJJds8-Di7BQSP_guHxICN7woVYoN5NP_22ra-BIo4bqnTT9FR6fB-Ku2P0AoRpX0Ds-LRkDeAoD8F/pub?start=false&amp;loop=false&amp;delayms=60000" target="_blank">
+                Контент
+              </a></li><li class="tm-footer-menu__list-item"><a href="https://tmtm.timepad.ru/" target="_blank">
+                Семинары
+              </a></li><li class="tm-footer-menu__list-item"><a href="https://habr.com/ru/megaprojects/" class="footer-menu__item-link">
+                Мегапроекты
+              </a></li></ul></div></div></div></div></div><div class="tm-footer"><div class="tm-page-width"><div class="tm-footer__container"><!----><div class="tm-footer__social"><a href="https://www.facebook.com/habrahabr.ru" rel="nofollow noopener noreferrer" target="_blank" class="tm-svg-icon__wrapper tm-social-icons__icon"><svg height="16" width="16" class="tm-svg-img tm-svg-icon"><title>Facebook</title><use xlink:href="/img/social-icons-sprite.svg#social-logo-facebook"></use></svg></a><a href="https://twitter.com/habr_com" rel="nofollow noopener noreferrer" target="_blank" class="tm-svg-icon__wrapper tm-social-icons__icon"><svg height="16" width="16" class="tm-svg-img tm-svg-icon"><title>Twitter</title><use xlink:href="/img/social-icons-sprite.svg#social-logo-twitter"></use></svg></a><a href="https://vk.com/habr" rel="nofollow noopener noreferrer" target="_blank" class="tm-svg-icon__wrapper tm-social-icons__icon"><svg height="16" width="16" class="tm-svg-img tm-svg-icon"><title>VK</title><use xlink:href="/img/social-icons-sprite.svg#social-logo-vkontakte"></use></svg></a><a href="https://telegram.me/habr_com" rel="nofollow noopener noreferrer" target="_blank" class="tm-svg-icon__wrapper tm-social-icons__icon"><svg height="16" width="16" class="tm-svg-img tm-svg-icon"><title>Telegram</title><use xlink:href="/img/social-icons-sprite.svg#social-logo-telegram"></use></svg></a><a href="https://www.youtube.com/channel/UCd_sTwKqVrweTt4oAKY5y4w" rel="nofollow noopener noreferrer" target="_blank" class="tm-svg-icon__wrapper tm-social-icons__icon"><svg height="16" width="16" class="tm-svg-img tm-svg-icon"><title>Youtube</title><use xlink:href="/img/social-icons-sprite.svg#social-logo-youtube"></use></svg></a><a href="https://zen.yandex.ru/habr" rel="nofollow noopener noreferrer" target="_blank" class="tm-svg-icon__wrapper tm-social-icons__icon"><svg height="16" width="16" class="tm-svg-img tm-svg-icon"><title>Яндекс Дзен</title><use xlink:href="/img/social-icons-sprite.svg#social-logo-zen"></use></svg></a></div><div class="v-portal" style="display:none;"></div><button class="tm-footer__link"><!---->
+        Настройка языка
+      </button><a href="https://habr.com/ru/about" class="tm-footer__link">
+        О сайте
+      </a><a href="https://habr.com/ru/feedback/" class="tm-footer__link">
+        Техническая поддержка
+      </a><!----><div><a href="https://habr.com/berserk-mode-nope" class="tm-footer__link">
+          Вернуться на старую версию
+        </a></div><div class="tm-footer-copyright"><span class="tm-copyright"><span class="tm-copyright__years">© 2006–2021 </span><span class="tm-copyright__name">«<a href="https://company.habr.com/" rel="noopener" target="_blank" class="tm-copyright__link">Habr</a>»</span></span></div></div></div></div><!----><!----><div class="vue-portal-target"><!----></div></div></div>
+
+<script src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/chunk-vendors.js" defer="defer"></script><script src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/chunk-f458c7c4.js" defer="defer"></script><script src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/app.js" defer="defer"></script>
+
+
+
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    </script>
+  
+  <script type="text/javascript">
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+    m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+    (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+    ym(24049213, "init", {
+      trackLinks:true,
+      accurateTrackBounce:true,
+    });
+  </script>
+  <noscript>
+    <div>
+      <img src="https://mc.yandex.ru/watch/24049213" style="position:absolute; left:-9999px;" alt="" />
+    </div>
+  </noscript>
+  
+    <script type="text/javascript">
+      window.addEventListener('load', function () {
+        setTimeout(() => {
+          const img = new Image();
+          img.src = 'https://vk.com/rtrg?p=VK-RTRG-421343-57vKE';
+        }, 0);
+      });
+    </script><iframe src="%D0%9D%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B5%D0%BC%20%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83%20%D1%81%20Google%20Sheets%20%D0%BD%D0%B0%20Python.%20%D0%9E%D1%82%20%D1%80%D0%B5%D0%B3%D0%B8%D1%81%D1%82%D1%80%D0%B0%D1%86%D0%B8%D0%B8%20%D0%B4%D0%BE%20%D1%87%D1%82%D0%B5%D0%BD%D0%B8%D1%8F%20%D0%B4%D0%B0%D0%BD%D0%BD%D1%8B%D1%85%20_%20%D0%A5%D0%B0%D0%B1%D1%80_files/container.htm" style="visibility: hidden; display: none;"></iframe>
+  
+
+
+<div><div><div class="Vue-Toastification__container top-left"></div></div><div><div class="Vue-Toastification__container top-center"></div></div><div><div class="Vue-Toastification__container top-right"></div></div><div><div class="Vue-Toastification__container bottom-left"></div></div><div><div class="Vue-Toastification__container bottom-center"></div></div><div><div class="Vue-Toastification__container bottom-right"></div></div></div><div id="K9Jn4i4Yhz" style="display: none;"></div><iframe id="google_osd_static_frame_546797133877" name="google_osd_static_frame" style="display: none; width: 0px; height: 0px;"></iframe></body></html>
