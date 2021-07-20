@@ -12,15 +12,21 @@ class GoogleSheets:
     spreadsheet_id = None
 
     def __init__(self, creds_json: str, spreadsheet_id: str):
-        credentials_file = creds_json
+
+        self.credentials_file = creds_json
+        self.connect()
+        self.spreadsheet_id = spreadsheet_id
+
+    def connect(self):
         credentials = ServiceAccountCredentials.from_json_keyfile_name(
-            credentials_file,
+            self.credentials_file,
             ['https://www.googleapis.com/auth/spreadsheets',
              'https://www.googleapis.com/auth/drive'])
         http_auth = credentials.authorize(httplib2.Http())
         self.service = build('sheets', 'v4', http=http_auth)
 
-        self.spreadsheet_id = spreadsheet_id
+    def disconnect(self):
+        self.service.close()
 
     def read(self, sheet: str, pos: str):
         rangee = f'{sheet}!{pos}'
