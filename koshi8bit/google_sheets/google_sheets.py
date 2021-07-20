@@ -11,11 +11,12 @@ class GoogleSheets:
     service = None
     spreadsheet_id = None
 
-    def __init__(self, creds_json: str, spreadsheet_id: str):
+    def __init__(self, creds_json: str, spreadsheet_id: str, logger=False):
 
         self.credentials_file = creds_json
         self.connect()
         self.spreadsheet_id = spreadsheet_id
+
 
     def connect(self):
         credentials = ServiceAccountCredentials.from_json_keyfile_name(

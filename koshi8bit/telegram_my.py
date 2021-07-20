@@ -3,6 +3,8 @@ import traceback
 import telegram
 import io
 import datetime
+import koshi8bit.easy_living as el
+
 #
 # from telethon import TelegramClient, events
 #
@@ -30,6 +32,25 @@ class TelegramMy:
         self.bot = telegram.Bot(token=self.bot_token)
         self.chat_id = chat_id
         self.project_prefix = None
+        self.logger = None
+        self.log_buffer = ''
+
+    def _push_log(self):
+        if not self.log_buffer:
+            return
+
+        self.send(self.log_buffer)
+        self.log_buffer = ''
+
+    def start_logging(self, sec: int):
+        self.logger = el.BackgroundWorker(sec, self._push_log)
+
+    def stop_logging(self):
+        if self.logger:
+            self.logger.stop()
+
+    def commit(self, text):
+        self.log_buffer = self.log_buffer + text + '\n'
 
     def set_project_prefix(self, text):
         if text == '':
@@ -37,14 +58,19 @@ class TelegramMy:
 
         self.project_prefix = f'*{text}*'
 
-    def send(self, text, raise_exception=True):
-        if len(text) > 4095:  # telegram max 4096
-            self.send_text_as_file(text)
+    def send(self, text, raise_exception=True, markdown=False):
         try:
+            if len(text) > 4095:  # telegram max 4096
+                self.send_text_as_file(text)
+                return
+
             if self.project_prefix is not None:
                 text = f'{self.project_prefix}: {text}'
 
-            self.bot.sendMessage(chat_id=self.chat_id, text=text, parse_mode=telegram.ParseMode.MARKDOWN)
+            if markdown:
+                self.bot.sendMessage(chat_id=self.chat_id, text=text, parse_mode=telegram.ParseMode.MARKDOWN)
+            else:
+                self.bot.sendMessage(chat_id=self.chat_id, text=text)
 
         except Exception as ex:
             if raise_exception:
@@ -73,7 +99,8 @@ class TelegramMy:
                 raise ex
 
     def disconnect(self):
-        pass
+        self.stop_logging()
+        # self.bot.close()
 
     def connect(self):
         self.bot = telegram.Bot(token=self.bot_token)
