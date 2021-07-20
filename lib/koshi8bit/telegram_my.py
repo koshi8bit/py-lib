@@ -3,7 +3,7 @@ import traceback
 import telegram
 import io
 import datetime
-import koshi8bit.easy_living as el
+import lib.koshi8bit.easy_living as el
 
 #
 # from telethon import TelegramClient, events

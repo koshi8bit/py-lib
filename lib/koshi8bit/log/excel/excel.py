@@ -1,4 +1,4 @@
-import koshi8bit.easy_living as el
+import lib.koshi8bit.easy_living as el
 from datetime import datetime
 import os
 import numpy as np

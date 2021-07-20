@@ -3,7 +3,7 @@ from unittest import TestCase
 from freezegun import freeze_time
 import os
 
-from koshi8bit.log.excel.excel import Excel
+from lib.koshi8bit.log.excel.excel import Excel
 from datetime import datetime
 
 

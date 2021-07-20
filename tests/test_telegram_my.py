@@ -2,7 +2,7 @@ import os
 import time
 from unittest import TestCase
 from dotenv import load_dotenv
-from koshi8bit.telegram_my import TelegramMy
+from lib.koshi8bit.telegram_my import TelegramMy
 
 
 class TestTelegramMy(TestCase):

@@ -1,5 +1,5 @@
 from unittest import TestCase
-from koshi8bit.auto_scale import AutoScale
+from lib.koshi8bit.auto_scale import AutoScale
 
 
 class Test(TestCase):

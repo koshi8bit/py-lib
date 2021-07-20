@@ -1,6 +1,6 @@
 from unittest import TestCase
-from koshi8bit.log.google_sheets.google_sheets import GoogleSheets
-from koshi8bit.easy_living import Format
+from lib.koshi8bit.log.google_sheets.google_sheets import GoogleSheets
+from lib.koshi8bit.easy_living import Format
 
 sheet = 'test-sheet'
 
