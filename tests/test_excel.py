@@ -72,16 +72,14 @@ class TestExcel(TestCase):
 
     def test_push(self):
         try:
-            os.remove(r'C:\tmp\2021-07-14--13-21-16.xls')
+            os.remove(r'C:\tmp\2021-07-14--13-23-16.xls')
         except OSError:
             pass
 
-        with freeze_time("2021-07-14 13:21:16.123456"):
-            excel = Excel(r'C:\tmp', ['one', 'two'])
-            excel._bw_commit.stop()
+        with freeze_time("2021-07-14 13:23:16.123456"):
+            excel = Excel(r'C:\tmp', ['one', 'two'], auto_commit_sec=0, auto_push_sec=0)
             excel.commit([10.2, 16])
             excel.commit([11.3, 16.9])
-            excel._commit_n_records()
             excel.push()
             name = excel.file_name
             # del excel
@@ -89,7 +87,7 @@ class TestExcel(TestCase):
             with open(name, 'r') as f:
                 self.assertEqual(
                     'time\tdatetime\tone\ttwo\n'
-                    '13:21:16\t2021-07-14@13:21:16.123456\t1,075E+01\t1,645E+01\n', f.read())
+                    '13:23:16\t2021-07-14@13:23:16.123456\t1,075E+01\t1,645E+01\n', f.read())
 
         # os.remove(r'C:\tmp\2021-07-14--13-21-16.xls')
         excel.close()

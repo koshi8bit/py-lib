@@ -41,10 +41,14 @@ class Excel:
 
         if auto_commit_sec > 0:
             self._bw_commit = el.BackgroundWorker(auto_commit_sec, self._commit_n_records)
+        else:
+            self._bw_commit = None
         if auto_push_sec > 0:
             self._bw_push = el.BackgroundWorker(auto_push_sec, self._push)
+        else:
+            self._bw_push = None
 
-        self.push()
+        self._push()
 
     @staticmethod
     def _calc_avg(arr):
@@ -105,5 +109,8 @@ class Excel:
         return line
 
     def close(self):
-        self._bw_commit.stop()
-        self._bw_push.stop()
+        if self._bw_commit:
+            self._bw_commit.stop()
+
+        if self._bw_push:
+            self._bw_push.stop()
