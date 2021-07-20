@@ -22,8 +22,9 @@ class Excel:
         self.scientific_notation = scientific_notation
         self.add_time = add_time
         self._commit_buffer = []
+        self.headers_without_time = headers
 
-        f = el.Format.date_time_file()
+        f = el.Format.date_time_file(False)
         dt = datetime.now()
         file_name = f'{dt.strftime(f)}.xls'
         self.file_name = os.path.join(path, file_name)
@@ -59,7 +60,8 @@ class Excel:
 
     def _commit_n_records(self):
         if not self._commit_buffer:
-            return
+            # print('asdasd', len(self.headers), [0]*len(self.headers))
+            self._commit_buffer = [[0]*len(self.headers_without_time)]
 
         # print(self._commit_buffer)
         # print(list(map(lambda x: len(x), self._commit_buffer)))
@@ -72,8 +74,8 @@ class Excel:
         if self.add_time:
             a = []
             dt = datetime.now()
-            a.append(dt.strftime(el.Format.time_ui(False)))
-            a.append(dt.strftime(el.Format.date_time_ui(True)))
+            a.append(dt.strftime(el.Format.time_ui(False, False)))
+            a.append(dt.strftime(el.Format.date_time_ui(False, True)))
             tmp = a + tmp
         tmp = self._prepare_line(tmp)
         self._buffer = self._buffer + tmp
