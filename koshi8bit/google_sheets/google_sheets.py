@@ -85,3 +85,5 @@ class GoogleSheets:
 
         return is_ok
 
+    def __del__(self):
+        self.disconnect()
