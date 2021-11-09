@@ -5,18 +5,28 @@ import httplib2
 from googleapiclient.discovery import build
 from dotenv import load_dotenv
 import os
-
+import re
+import validators
 
 class GoogleSheets:
     service = None
     spreadsheet_id = None
 
-    def __init__(self, creds_json: str, spreadsheet_id: str, logger=False):
+    def __init__(self, creds_json: str, full_link: str, logger=False):
 
         self.credentials_file = creds_json
         self.connect()
-        self.spreadsheet_id = spreadsheet_id
 
+        if validators.url(full_link):
+            self.spreadsheet_id = self.parsing_id_from_table_link(full_link)
+        elif full_link is None:
+            print("Id of the table is None")
+        else:
+            self.spreadsheet_id = full_link
+
+    def parsing_id_from_table_link(self, full_link: str):
+        id = re.search(r"https://docs\.google\.com/spreadsheets/d/(.+)/", full_link).group(1)
+        return id
 
     def connect(self):
         credentials = ServiceAccountCredentials.from_json_keyfile_name(
