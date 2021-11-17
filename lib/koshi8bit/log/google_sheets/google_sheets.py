@@ -12,7 +12,7 @@ class GoogleSheets:
     service = None
     spreadsheet_id = None
 
-    def __init__(self, creds_json: str, full_link: str, logger=False):
+    def __init__(self, creds_json: str, full_link: str):
 
         self.credentials_file = creds_json
         self.connect()
@@ -20,13 +20,16 @@ class GoogleSheets:
         if validators.url(full_link):
             self.spreadsheet_id = self.parsing_id_from_table_link(full_link)
         elif full_link is None:
-            print("Id of the table is None")
+            raise ValueError("Id of the table is None. Perhaps you forgot to pass the required full_link parameter")
         else:
             self.spreadsheet_id = full_link
 
     def parsing_id_from_table_link(self, full_link: str):
-        id = re.search(r"https://docs\.google\.com/spreadsheets/d/(.+)/", full_link).group(1)
-        return id
+        sheet_id = re.search(r"https://docs\.google\.com/spreadsheets/d/(.+)/", full_link).group(1)
+        if sheet_id is None:
+            raise ValueError("Id sheets is None. Possible reasons for the error: an invalid URL was specified or "
+                             "the file does not exist.")
+        return sheet_id
 
     def connect(self):
         credentials = ServiceAccountCredentials.from_json_keyfile_name(
