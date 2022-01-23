@@ -26,7 +26,7 @@ import lib.koshi8bit.easy_living as el
 #     await client.run_until_disconnected()
 
 
-class TelegramMy:
+class TelegramLogger:
     def __init__(self, bot_token, chat_id):
         self.bot_token = bot_token
         self.bot = telegram.Bot(token=self.bot_token)
@@ -42,7 +42,7 @@ class TelegramMy:
         self.send(self.log_buffer)
         self.log_buffer = ''
 
-    def start_logging(self, sec: int):
+    def start_pushing(self, sec: int):
         self.logger = el.BackgroundWorker(sec, self._push_log)
 
     def stop_logging(self):
@@ -89,9 +89,10 @@ class TelegramMy:
             if raise_exception:
                 raise ex
 
-    def send_stack(self, text, raise_exception=True):
+    def send_stack(self, text="", raise_exception=True):
         try:
-            self.send(text)
+            if text:
+                self.send(text)
             self.send_text_as_file(traceback.format_exc())
 
         except Exception as ex:
