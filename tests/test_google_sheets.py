@@ -26,38 +26,39 @@ class TestGoogleSheets(TestCase):
             cell = gs.read_cell(self.sheet, 'A1')
             print(cell)
 
-    def test_invalid_range(self):
+    def test_read_invalid_range(self):
         with self.assertRaises(GoogleSheets.InvalidRange):
             gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
             lines = gs.read(self.sheet, 'A999:B1B1')
             print(lines)
 
-    def test_invalid_range_list(self):
+        with self.assertRaises(GoogleSheets.InvalidRange):
+            gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
+            lines = gs.read(self.sheet, 'A1A:B2')
+            print(lines)
+
         with self.assertRaises(GoogleSheets.InvalidRange):
             gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
             lines = gs.read(self.sheet+"1", 'A1:D4')
             print(lines)
 
-    def test_throws_exception_when_read_cell(self):
-        gs = GoogleSheets('../creds.json', '1kr1hAsjx2UGm9AgZRvWlkMHSiG_T4WxE0VozZNK9gtY')
+    def test_read_cell_invalid_range(self):
+        with self.assertRaises(GoogleSheets.InvalidRange):
+            gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
+            lines = gs.read(self.sheet, 'A1A:B2')
+            print(lines)
 
-        with self.assertRaises(BaseException):
-            cell = gs.read_cell('Лист11', 'AA1')
-            print(cell)
-
-    def test_throws_exception_read_cell_with_invalid_list(self):
-        gs = GoogleSheets('../creds.json', '1kr1hAsjx2UGm9AgZRvWlkMHSiG_T4WxE0VozZNK9gtY')
-
-        with self.assertRaises(BaseException):
-            cell = gs.read_cell('Лист12', 'A1')
-            print(cell)
+        with self.assertRaises(GoogleSheets.InvalidRange):
+            gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
+            lines = gs.read(self.sheet + "1", 'A1:D4')
+            print(lines)
 
     def test_throws_exception_when_write_cell(self):
-        gs = GoogleSheets('../creds.json', '1kr1hAsjx2UGm9AgZRvWlkMHSiG_T4WxE0VozZNK9gtY')
+        gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
 
-        with self.assertRaises(BaseException):
-            data = [[1, '2', 3], [4, 's5', 6]]
-            res = gs.write('Лист11', 'B1B1:D', data)
+        # with self.assertRaises(BaseException):
+        data = [[1, '2', 3], [4, 's5', 6]]
+        res = gs.write('Лист11', 'B1B1:D', data)
 
     def test_throws_exception_write_with_invalid_list(self):
         gs = GoogleSheets('../creds.json', '1kr1hAsjx2UGm9AgZRvWlkMHSiG_T4WxE0VozZNK9gtY')
