@@ -16,7 +16,7 @@ class TestGoogleSheets(TestCase):
     def test_connect_with_invalid_creds(self):
         with self.assertRaises(GoogleSheets.InvalidCred):
             gs = GoogleSheets(self.cred_file_invalid, self.spreadsheet_id)
-            cell = gs.read_cell('Лист11', 'A1')
+            cell = gs.read_cell(self.sheet, 'A1')
             print(cell)
 
     def test_connect_with_invalid_id_sheet(self):
@@ -26,17 +26,16 @@ class TestGoogleSheets(TestCase):
             cell = gs.read_cell(self.sheet, 'A1')
             print(cell)
 
-    def test_throws_exception_when_read_range(self):
+    def test_invalid_range(self):
         with self.assertRaises(GoogleSheets.InvalidRange):
             gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
-            lines = gs.read('Лист11', 'A999:B1B1')
+            lines = gs.read(self.sheet, 'A999:B1B1')
             print(lines)
 
-    def test_throws_exception_read_range_with_invalid_list(self):
-        gs = GoogleSheets('../creds.json', '1kr1hAsjx2UGm9AgZRvWlkMHSiG_T4WxE0VozZNK9gtY')
-
-        with self.assertRaises(BaseException):
-            lines = gs.read('Лист', 'A1:D4')
+    def test_invalid_range_list(self):
+        with self.assertRaises(GoogleSheets.InvalidRange):
+            gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
+            lines = gs.read(self.sheet+"1", 'A1:D4')
             print(lines)
 
     def test_throws_exception_when_read_cell(self):
