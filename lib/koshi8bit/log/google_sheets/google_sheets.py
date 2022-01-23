@@ -71,12 +71,16 @@ class GoogleSheets:
         if not os.path.isfile(file_name):
             raise ValueError("Cred file does not exist")
 
-    @staticmethod
-    def parsing_id_from_table_link(full_link: str):
-        sheet_id = re.search(r"https://docs\.google\.com/spreadsheets/d/(.+)/", full_link).group(1)
+    def parsing_id_from_table_link(self, full_link: str):
+        full_link = full_link.rstrip("/")
+        sheet_id = re.search(r"https://docs\.google\.com/spreadsheets/d/(.+)", full_link)
         if sheet_id is None:
-            raise ValueError("Id sheets is None. Possible reasons for the error: an invalid URL was specified or "
-                             "the file does not exist.")
+            raise self.InvalidSpreadsheetURLorId
+
+        sheet_id = sheet_id.group(1)
+        if sheet_id is None:
+            raise self.InvalidSpreadsheetURLorId
+
         return sheet_id
 
     def connect(self):
