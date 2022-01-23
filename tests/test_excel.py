@@ -91,3 +91,18 @@ class TestExcel(TestCase):
 
         # os.remove(r'C:\tmp\2021-07-14--13-21-16.xls')
         excel.close()
+
+    def test_commit_diff_size(self):
+
+        with freeze_time("2021-07-14 13:20:16.123456"):
+            excel = Excel(r'C:\tmp', ['one', 'two'])
+            excel._bw_commit.stop()
+
+        with self.assertRaises(ValueError) as context:
+            excel.commit([1, 2, 3])
+
+        print(context, context.exception)
+        print('len(self.headers_without_time) != len(data)' == context.exception)
+
+        self.assertTrue('len(self.headers_without_time) != len(data)' == context.exception)
+        excel.close()

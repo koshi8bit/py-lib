@@ -86,6 +86,8 @@ class Excel:
 
     def commit(self, data):
         assert isinstance(data, list)
+        if len(self.headers_without_time) != len(data):
+            raise ValueError('len(self.headers_without_time) != len(data)')
         self._commit_buffer.append(data)
 
     def _push(self):
