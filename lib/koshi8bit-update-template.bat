@@ -7,7 +7,7 @@ exit
 
 set source="XXX"
 
-set dest=%cd%\kb4\
+set dest=%cd%\koshi8bit\
 :RESTARTT
 rd %dest% /Q /S
 IF EXIST %dest% (
