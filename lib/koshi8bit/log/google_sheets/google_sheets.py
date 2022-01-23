@@ -52,6 +52,18 @@ class GoogleSheets:
         def __str__(self):
             return f"Range is invalid ({self.range})"
 
+    class AppendUnsuccessful(Exception):
+        def __str__(self):
+            return "Append to spreadsheet is unsuccessful"
+
+    class WriteUnsuccessful(Exception):
+        def __str__(self):
+            return "Write to spreadsheet is unsuccessful"
+
+    class ClearUnsuccessful(Exception):
+        def __str__(self):
+            return "Clear in spreadsheet is unsuccessful"
+
     @staticmethod
     def check_cred_file(file_name: str):
         if not os.path.isfile(file_name):
@@ -76,6 +88,13 @@ class GoogleSheets:
     def disconnect(self):
         self.service.close()
 
+    def process_ex(self, e: Exception, range_: str):
+        if 'Details: "Requested entity was not found."' in str(e):
+            raise self.InvalidSpreadsheetURLorId
+        if 'Details: "Unable to parse range: ' in str(e):
+            raise self.InvalidRange(range_)
+        raise e
+
     def _read(self, range_: str):
         try:
             result_input = self.service.spreadsheets().values().get(spreadsheetId=self.spreadsheet_id,
@@ -83,11 +102,7 @@ class GoogleSheets:
             return result_input.get('values', [])
 
         except Exception as e:
-            if 'Details: "Requested entity was not found."' in str(e):
-                raise self.InvalidSpreadsheetURLorId
-            if 'Details: "Unable to parse range: ' in str(e):
-                raise self.InvalidRange(range_)
-            raise e
+            self.process_ex(e, range_)
 
     def read(self, sheet: str, pos: str):
         range_ = f'{sheet}!{pos}'
@@ -103,47 +118,53 @@ class GoogleSheets:
         return values_input[0][0]
 
     def append(self, sheet: str, pos: str, data):
-        rangee = f'{sheet}!{pos}'
-        res = self.service.spreadsheets().values().append(
-            spreadsheetId=self.spreadsheet_id,
-            range=rangee, valueInputOption="USER_ENTERED",
-            insertDataOption="INSERT_ROWS", body={"values": data}
-        ).execute()
+        range_ = f'{sheet}!{pos}'
+        try:
+            res = self.service.spreadsheets().values().append(
+                spreadsheetId=self.spreadsheet_id,
+                range=range_, valueInputOption="USER_ENTERED",
+                insertDataOption="INSERT_ROWS", body={"values": data}
+            ).execute()
 
-        is_ok = isinstance(res, dict) and 'spreadsheetId' in res and res['spreadsheetId'] == self.spreadsheet_id
+            is_ok = isinstance(res, dict) and 'spreadsheetId' in res and res['spreadsheetId'] == self.spreadsheet_id
 
-        if not is_ok:
-            raise ValueError('error while writing to google sheet')
+            if not is_ok:
+                raise self.AppendUnsuccessful
 
-        return is_ok
+        except Exception as e:
+            self.process_ex(e, range_)
 
     def write(self, sheet: str, pos: str, data):
-        rangee = f'{sheet}!{pos}'
-        res = self.service.spreadsheets().values().update(
-            spreadsheetId=self.spreadsheet_id,
-            range=rangee, valueInputOption="USER_ENTERED", body={"values": data}
-        ).execute()
+        range_ = f'{sheet}!{pos}'
+        try:
+            res = self.service.spreadsheets().values().update(
+                spreadsheetId=self.spreadsheet_id,
+                range=range_, valueInputOption="USER_ENTERED", body={"values": data}
+            ).execute()
 
-        is_ok = isinstance(res, dict) and 'spreadsheetId' in res and res['spreadsheetId'] == self.spreadsheet_id
+            is_ok = isinstance(res, dict) and 'spreadsheetId' in res and res['spreadsheetId'] == self.spreadsheet_id
 
-        if not is_ok:
-            raise ValueError('error while writing to google sheet')
+            if not is_ok:
+                raise self.WriteUnsuccessful
 
-        return is_ok
+        except Exception as e:
+            self.process_ex(e, range_)
 
     def clear(self, sheet: str, pos: str):
-        rangee = f'{sheet}!{pos}'
-        body = {}
-        res = self.service.spreadsheets().values().clear(
-            spreadsheetId=self.spreadsheet_id, range=rangee, body=body
-        ).execute()
+        range_ = f'{sheet}!{pos}'
+        try:
+            body = {}
+            res = self.service.spreadsheets().values().clear(
+                spreadsheetId=self.spreadsheet_id, range=range_, body=body
+            ).execute()
 
-        is_ok = isinstance(res, dict) and 'spreadsheetId' in res and res['spreadsheetId'] == self.spreadsheet_id
+            is_ok = isinstance(res, dict) and 'spreadsheetId' in res and res['spreadsheetId'] == self.spreadsheet_id
 
-        if not is_ok:
-            raise ValueError('error while clearing to google sheet')
+            if not is_ok:
+                raise self.ClearUnsuccessful
 
-        return is_ok
+        except Exception as e:
+            self.process_ex(e, range_)
 
     # def __del__(self):
     #     self.disconnect()
