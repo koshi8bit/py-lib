@@ -14,7 +14,7 @@ class TestGoogleSheets(TestCase):
         self.sheet = 'test-sheet'
 
     def test_connect_with_invalid_creds(self):
-        with self.assertRaises(BaseException):
+        with self.assertRaises(GoogleSheets.InvalidCred):
             gs = GoogleSheets(self.cred_file_invalid, self.spreadsheet_id)
             cell = gs.read_cell('Лист11', 'A1')
             print(cell)

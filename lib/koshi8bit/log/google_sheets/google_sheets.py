@@ -17,7 +17,14 @@ class GoogleSheets:
 
         # self.check_cred_file(creds_json)
         self.credentials_file = creds_json
-        self.connect()
+        try:
+            self.connect()
+
+        except FileNotFoundError as e:
+            raise e
+
+        except Exception:
+            raise self.InvalidCred
 
         if validators.url(full_link):
             self.spreadsheet_id = self.parsing_id_from_table_link(full_link)
@@ -29,6 +36,10 @@ class GoogleSheets:
     class EmptyData(Exception):
         def __str__(self):
             return f"Data in this range is empty"
+
+    class InvalidCred(Exception):
+        def __str__(self):
+            return "Credentials file is invalid"
 
     @staticmethod
     def check_cred_file(file_name: str):
