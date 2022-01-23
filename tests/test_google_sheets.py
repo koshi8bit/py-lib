@@ -53,73 +53,63 @@ class TestGoogleSheets(TestCase):
             lines = gs.read(self.sheet + "1", 'A1:D4')
             print(lines)
 
-    def test_throws_exception_when_write_cell(self):
-        gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
-
-        # with self.assertRaises(BaseException):
+    def test_write_invalid_range(self):
         data = [[1, '2', 3], [4, 's5', 6]]
-        res = gs.write('Лист11', 'B1B1:D', data)
 
-    def test_throws_exception_write_with_invalid_list(self):
-        gs = GoogleSheets('../creds.json', '1kr1hAsjx2UGm9AgZRvWlkMHSiG_T4WxE0VozZNK9gtY')
-
-        with self.assertRaises(BaseException):
-            data = [[1, '2', 3], [4, 's5', 6]]
-            res = gs.write('Лист113', 'B1:D', data)
-
-    def test_no_data_in_cell(self):
-        with self.assertRaises(GoogleSheets.EmptyData):
+        with self.assertRaises(GoogleSheets.InvalidRange):
             gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
-            cell = gs.read_cell(self.sheet, 'A1')
-            print(cell)
+            lines = gs.write(self.sheet, 'A999:B1B1', data)
+            print(lines)
+
+        with self.assertRaises(GoogleSheets.InvalidRange):
+            gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
+            lines = gs.write(self.sheet, 'A1A:B2', data)
+            print(lines)
+
+        with self.assertRaises(GoogleSheets.InvalidRange):
+            gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
+            lines = gs.write(self.sheet + "1", 'A1:D4', data)
+            print(lines)
 
     def test_read(self):
-        gs = GoogleSheets('../private/creds.json',
-                          '1Q3b0RAk8qLK-7H8c45p9TTqRgMjKD0NIs91uY4FZsy8')
-
-        lines = gs.read(self.sheet, 'B1:D1')
-        print(lines)
-        self.assertEqual([['append1', 'append2', 'append3']], lines)
+        with GoogleSheets(self.cred_file_valid, self.spreadsheet_id) as gs:
+            lines = gs.read(self.sheet, 'B1:D1')
+            self.assertEqual([['append1', 'append2', 'append3']], lines)
 
     def test_read_cell(self):
-        gs = GoogleSheets('../private/creds.json',
-                          '1Q3b0RAk8qLK-7H8c45p9TTqRgMjKD0NIs91uY4FZsy8')
-
+        gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
         cell = gs.read_cell(self.sheet, 'F1')
         self.assertEqual(cell, 'write1')
 
+    def test_read_cell_none(self):
+        gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
+        cell = gs.read_cell(self.sheet, 'A1')
+        self.assertEqual(cell, None)
+
     def test_append(self):
-        gs = GoogleSheets('../private/creds.json',
-                          '1Q3b0RAk8qLK-7H8c45p9TTqRgMjKD0NIs91uY4FZsy8')
+        gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
 
         data = [[1, 2, 3], [4, '5', 6]]
-        res = gs.append(self.sheet, 'B3:B', data)
-        self.assertTrue(res)
+        gs.append(self.sheet, 'B3:B', data)
 
         data = [[0.1, 0.2, 0.3], [0.4, '0.5', 0.6]]
-        res = gs.append(self.sheet, 'B5:B', data)
-        self.assertTrue(res)
+        gs.append(self.sheet, 'B5:B', data)
 
     def test_write(self):
-        gs = GoogleSheets('../private/creds.json',
-                          '1Q3b0RAk8qLK-7H8c45p9TTqRgMjKD0NIs91uY4FZsy8')
+        gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
 
         n = Format.date_time_ui(True, False)
         data = [[10, n, 30], [40, '50', 60]]
-        res = gs.write(self.sheet, 'F3:H', data)
-        self.assertTrue(res)
+        gs.write(self.sheet, 'F3:H', data)
 
         cell = gs.read_cell(self.sheet, 'G3')
         self.assertEqual(n, cell)
 
     def test_clear(self):
-        gs = GoogleSheets('../private/creds.json',
-                          '1Q3b0RAk8qLK-7H8c45p9TTqRgMjKD0NIs91uY4FZsy8')
+        gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
 
-        res = gs.clear(self.sheet, 'J3:L')
-        self.assertTrue(res)
+        gs.clear(self.sheet, 'J3:L')
 
         n = Format.date_time_ui(True, False)
         data = [[10, n, 30], [40, '50', 60]]
-        res = gs.write(self.sheet, 'J3:L', data)
-        self.assertTrue(res)
+        gs.write(self.sheet, 'J3:L', data)

@@ -33,10 +33,6 @@ class GoogleSheets:
         else:
             self.spreadsheet_id = full_link
 
-    class EmptyData(Exception):
-        def __str__(self):
-            return f"Data in this range is empty"
-
     class InvalidCred(Exception):
         def __str__(self):
             return "Credentials file is invalid"
@@ -63,6 +59,12 @@ class GoogleSheets:
     class ClearUnsuccessful(Exception):
         def __str__(self):
             return "Clear in spreadsheet is unsuccessful"
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.disconnect()
 
     @staticmethod
     def check_cred_file(file_name: str):
@@ -113,7 +115,7 @@ class GoogleSheets:
         values_input = self._read(range_)
 
         if not values_input:
-            raise self.EmptyData
+            return None
 
         return values_input[0][0]
 
