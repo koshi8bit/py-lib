@@ -1,9 +1,28 @@
+import os.path
 from datetime import datetime
 from unittest import TestCase
 import lib.koshi8bit.easy_living as el
+from pathlib import Path
 
 
 class TestFormat(TestCase):
+    def test_utils_create_dir(self):
+        root_path = r'F:\home\koshi8bit\temp\adgfdgf\1'
+        extra_path = os.path.join(root_path, r'2\3\4')
+
+        if el.Utils.dir_exist(root_path):
+            el.Utils.dir_rm(root_path)
+        self.assertFalse(el.Utils.dir_exist(root_path))
+        self.assertFalse(el.Utils.dir_exist(extra_path))
+
+        el.Utils.dir_create(extra_path)
+        self.assertTrue(el.Utils.dir_exist(root_path))
+        self.assertTrue(el.Utils.dir_exist(extra_path))
+
+        el.Utils.dir_rm(root_path)
+        self.assertFalse(el.Utils.dir_exist(root_path))
+        self.assertFalse(el.Utils.dir_exist(extra_path))
+
     def test_date_time_file(self):
         dt = datetime(2021, 7, 14, 13, 20, 16)
         f = el.Format.date_time_file(False)

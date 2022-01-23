@@ -1,5 +1,23 @@
 import datetime
+import os
+import shutil
 from threading import Timer
+from pathlib import Path
+
+
+class Utils:
+
+    @staticmethod
+    def dir_create(path: str):
+        Path(path).mkdir(parents=True, exist_ok=True)
+
+    @staticmethod
+    def dir_rm(_path: str):
+        shutil.rmtree(_path)
+
+    @staticmethod
+    def dir_exist(_path: str):
+        return os.path.isdir(_path)
 
 
 class Format:
