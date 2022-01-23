@@ -46,7 +46,7 @@ class TestGoogleSheets(TestCase):
             data = [[1, 2, 3], [4, '5', 6]]
             gs.append(self.sheet, 'B3:B', data)
 
-            data = [[0.1, 0.2, 0.3], [0.4, '0.5', 0.6]]
+            data = [[0.1, 0.2, 0.3], [0.4, '0.5', '0,6']]
             gs.append(self.sheet, 'B5:B', data)
 
     def test_write(self):
@@ -65,6 +65,8 @@ class TestGoogleSheets(TestCase):
             n = Format.date_time_ui(True, False)
             data = [[10, n, 30], [40, '50', 60]]
             gs.write(self.sheet, 'J3:L', data)
+
+#################################
 
     def test_connect_with_invalid_creds(self):
         with self.assertRaises(GoogleSheets.InvalidCred):
