@@ -56,7 +56,7 @@ class TelegramLogger:
         if text == '':
             return
 
-        self.project_prefix = f'*{text}*'
+        self.project_prefix = f'#{text}'
 
     def send(self, text, raise_exception=True, markdown=False):
         try:
@@ -65,7 +65,7 @@ class TelegramLogger:
                 return
 
             if self.project_prefix is not None:
-                text = f'{self.project_prefix}: {text}'
+                text = f'{self.project_prefix} {text}'
 
             if markdown:
                 self.bot.sendMessage(chat_id=self.chat_id, text=text, parse_mode=telegram.ParseMode.MARKDOWN)
