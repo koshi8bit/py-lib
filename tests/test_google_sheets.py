@@ -20,15 +20,14 @@ class TestGoogleSheets(TestCase):
             print(cell)
 
     def test_connect_with_invalid_id_sheet(self):
-        # with self.assertRaises(BaseException):
-        spreadsheet_id_invalid = self.spreadsheet_id + '3'
-            # gs = GoogleSheets(self.cred_file_valid, spreadsheet_id_invalid)
-        gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
-        cell = gs.read_cell(self.sheet, 'A1')
-        print(cell)
+        with self.assertRaises(GoogleSheets.InvalidSpreadsheetURLorId):
+            spreadsheet_id_invalid = self.spreadsheet_id + '3'
+            gs = GoogleSheets(self.cred_file_valid, spreadsheet_id_invalid)
+            cell = gs.read_cell(self.sheet, 'A1')
+            print(cell)
 
     def test_throws_exception_when_read_range(self):
-        gs = GoogleSheets('../private/creds.json', '1kr1hAsjx2UGm9AgZRvWlkMHSiG_T4WxE0VozZNK9gtY')
+        gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
 
         lines = gs.read('Лист11', 'A999:B1B1')
         print(lines)

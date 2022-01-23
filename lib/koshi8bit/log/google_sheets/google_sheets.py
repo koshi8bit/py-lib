@@ -41,6 +41,17 @@ class GoogleSheets:
         def __str__(self):
             return "Credentials file is invalid"
 
+    class InvalidSpreadsheetURLorId(Exception):
+        def __str__(self):
+            return "Spreadsheet URL or ID is invalid"
+
+    class InvalidRange(Exception):
+        def __init__(self, range_: str):
+            self.range = range_
+
+        def __str__(self):
+            return f"Range is invalid ({self.range})"
+
     @staticmethod
     def check_cred_file(file_name: str):
         if not os.path.isfile(file_name):
@@ -65,18 +76,26 @@ class GoogleSheets:
     def disconnect(self):
         self.service.close()
 
+    def _read(self, range_: str):
+        try:
+            result_input = self.service.spreadsheets().values().get(spreadsheetId=self.spreadsheet_id,
+                                                                    range=range_).execute()
+            return result_input.get('values', [])
+
+        except Exception as e:
+            if 'Details: "Requested entity was not found."' in str(e):
+                raise self.InvalidSpreadsheetURLorId
+            if 'Details: "Unable to parse range: ' in str(e):
+                raise self.InvalidRange(range_)
+            raise e
+
     def read(self, sheet: str, pos: str):
-        rangee = f'{sheet}!{pos}'
-        result_input = self.service.spreadsheets().values().get(spreadsheetId=self.spreadsheet_id,
-                                                                range=rangee).execute()
-        values_input = result_input.get('values', [])
-        return values_input
+        range_ = f'{sheet}!{pos}'
+        return self._read(range_)
 
     def read_cell(self, sheet: str, pos: str):
-        rangee = f'{sheet}!{pos}:{pos}'
-        result_input = self.service.spreadsheets().values().get(spreadsheetId=self.spreadsheet_id,
-                                                                range=rangee).execute()
-        values_input = result_input.get('values', [])
+        range_ = f'{sheet}!{pos}:{pos}'
+        values_input = self._read(range_)
 
         if not values_input:
             raise self.EmptyData
