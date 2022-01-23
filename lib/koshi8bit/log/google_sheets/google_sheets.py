@@ -8,12 +8,14 @@ import os
 import re
 import validators
 
+
 class GoogleSheets:
     service = None
     spreadsheet_id = None
 
     def __init__(self, creds_json: str, full_link: str):
 
+        # self.check_cred_file(creds_json)
         self.credentials_file = creds_json
         self.connect()
 
@@ -24,7 +26,17 @@ class GoogleSheets:
         else:
             self.spreadsheet_id = full_link
 
-    def parsing_id_from_table_link(self, full_link: str):
+    class EmptyData(Exception):
+        def __str__(self):
+            return f"Data in this range is empty"
+
+    @staticmethod
+    def check_cred_file(file_name: str):
+        if not os.path.isfile(file_name):
+            raise ValueError("Cred file does not exist")
+
+    @staticmethod
+    def parsing_id_from_table_link(full_link: str):
         sheet_id = re.search(r"https://docs\.google\.com/spreadsheets/d/(.+)/", full_link).group(1)
         if sheet_id is None:
             raise ValueError("Id sheets is None. Possible reasons for the error: an invalid URL was specified or "
@@ -54,6 +66,10 @@ class GoogleSheets:
         result_input = self.service.spreadsheets().values().get(spreadsheetId=self.spreadsheet_id,
                                                                 range=rangee).execute()
         values_input = result_input.get('values', [])
+
+        if not values_input:
+            raise self.EmptyData
+
         return values_input[0][0]
 
     def append(self, sheet: str, pos: str, data):
@@ -99,5 +115,5 @@ class GoogleSheets:
 
         return is_ok
 
-    def __del__(self):
-        self.disconnect()
+    # def __del__(self):
+    #     self.disconnect()
