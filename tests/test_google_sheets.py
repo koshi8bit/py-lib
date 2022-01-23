@@ -27,10 +27,10 @@ class TestGoogleSheets(TestCase):
             print(cell)
 
     def test_throws_exception_when_read_range(self):
-        gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
-
-        lines = gs.read('Лист11', 'A999:B1B1')
-        print(lines)
+        with self.assertRaises(GoogleSheets.InvalidRange):
+            gs = GoogleSheets(self.cred_file_valid, self.spreadsheet_id)
+            lines = gs.read('Лист11', 'A999:B1B1')
+            print(lines)
 
     def test_throws_exception_read_range_with_invalid_list(self):
         gs = GoogleSheets('../creds.json', '1kr1hAsjx2UGm9AgZRvWlkMHSiG_T4WxE0VozZNK9gtY')
