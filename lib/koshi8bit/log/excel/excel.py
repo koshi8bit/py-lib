@@ -8,15 +8,15 @@ import statistics
 
 class Excel:
 
-    def __init__(self, path, headers, precision=3, scientific_notation=True,
+    def __init__(self, path: str, headers: list[str], precision=3, scientific_notation=True,
                  add_time=True, auto_commit_sec=1, auto_push_sec=60):
-        assert isinstance(path, str)
-        assert isinstance(headers, list)
-        assert isinstance(precision, int)
-        assert isinstance(scientific_notation, bool)
-        assert isinstance(add_time, bool)
-        assert isinstance(auto_commit_sec, int)
-        assert isinstance(auto_push_sec, int)
+        # assert isinstance(path, str)
+        # assert isinstance(headers, list)
+        # assert isinstance(precision, int)
+        # assert isinstance(scientific_notation, bool)
+        # assert isinstance(add_time, bool)
+        # assert isinstance(auto_commit_sec, int)
+        # assert isinstance(auto_push_sec, int)
 
         self.precision = precision
         self.scientific_notation = scientific_notation
@@ -27,6 +27,7 @@ class Excel:
         f = el.Format.date_time_file(False)
         dt = datetime.now()
         file_name = f'{dt.strftime(f)}.xls'
+        el.Utils.dir_create(path)
         self.file_name = os.path.join(path, file_name)
 
         self.element_delimiter = '\t'

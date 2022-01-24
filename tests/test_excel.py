@@ -101,8 +101,5 @@ class TestExcel(TestCase):
         with self.assertRaises(ValueError) as context:
             excel.commit([1, 2, 3])
 
-        print(context, context.exception)
-        print('len(self.headers_without_time) != len(data)' == context.exception)
-
-        self.assertTrue('len(self.headers_without_time) != len(data)' == context.exception)
+        self.assertEqual('len(self.headers_without_time) != len(data)', str(context.exception))
         excel.close()

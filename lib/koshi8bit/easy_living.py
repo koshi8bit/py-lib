@@ -52,9 +52,9 @@ class Format:
     ###
 
     @staticmethod
-    def date_ui(dt: bool):
+    def date_ui(now: bool):
         f = Format.date()
-        if dt:
+        if now:
             return Format.now(f)
         else:
             return f
@@ -64,20 +64,20 @@ class Format:
         return '@'
 
     @staticmethod
-    def time_ui(dt: bool, show_ms: bool):
+    def time_ui(now: bool, show_ms: bool):
         f = '%H:%M:%S'
         if show_ms:
             f = f + '.%f'
 
-        if dt:
+        if now:
             return Format.now(f)
         else:
             return f
 
     @staticmethod
-    def date_time_ui(dt: bool, show_ms: bool):
+    def date_time_ui(now: bool, show_ms: bool):
         f = Format.date_ui(False) + Format.separator_ui() + Format.time_ui(False, show_ms)
-        if dt:
+        if now:
             return Format.now(f)
         else:
             return f
@@ -85,9 +85,9 @@ class Format:
     ###
 
     @staticmethod
-    def date_file(dt: bool):
+    def date_file(now: bool):
         f = Format.date()
-        if dt:
+        if now:
             return Format.now(f)
         else:
             return f
@@ -97,17 +97,17 @@ class Format:
         return '--'
 
     @staticmethod
-    def time_file(dt: bool):
+    def time_file(now: bool):
         f = '%H-%M-%S'
-        if dt:
+        if now:
             return Format.now(f)
         else:
             return f
 
     @staticmethod
-    def date_time_file(dt: bool):
+    def date_time_file(now: bool):
         f = Format.date_file(False) + Format.separator_file() + Format.time_file(False)
-        if dt:
+        if now:
             return Format.now(f)
         else:
             return f
