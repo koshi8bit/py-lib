@@ -19,6 +19,29 @@ class Utils:
     def dir_exist(_path: str):
         return os.path.isdir(_path)
 
+    @staticmethod
+    def dict_append(_dict, index, elem):
+        if index in _dict:
+            _dict[index].append(elem)
+        else:
+            _dict[index] = [elem]
+
+    @staticmethod
+    def json_get_val(_json, path, default_value=None):
+        """
+        Get value from JSON
+        :param _json:
+        :param path:
+        :param default_value:
+        :return: (is_path_valid, value)
+        """
+        cur = _json
+        for section in path:
+            if section not in cur:
+                return False, default_value
+            cur = cur[section]
+        return True, cur
+
 
 class Format:
 
