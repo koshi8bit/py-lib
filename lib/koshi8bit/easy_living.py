@@ -75,8 +75,9 @@ class Format:
             return f
 
     @staticmethod
-    def date_time_ui(now: bool, show_ms: bool):
-        f = Format.date_ui(False) + Format.separator_ui() + Format.time_ui(False, show_ms)
+    def date_time_ui(now: bool, show_ms: bool, iso=False):
+        separator = Format.separator_iso() if iso else Format.separator_ui()
+        f = Format.date_ui(False) + separator + Format.time_ui(False, show_ms)
         if now:
             return Format.now(f)
         else:
@@ -97,6 +98,10 @@ class Format:
         return '--'
 
     @staticmethod
+    def separator_iso():
+        return 'T'
+
+    @staticmethod
     def time_file(now: bool):
         f = '%H-%M-%S'
         if now:
@@ -105,8 +110,9 @@ class Format:
             return f
 
     @staticmethod
-    def date_time_file(now: bool):
-        f = Format.date_file(False) + Format.separator_file() + Format.time_file(False)
+    def date_time_file(now: bool, iso=False):
+        separator = Format.separator_iso() if iso else Format.separator_file()
+        f = Format.date_file(False) + separator + Format.time_file(False)
         if now:
             return Format.now(f)
         else:
