@@ -33,14 +33,14 @@ class Utils:
         :param _json:
         :param path:
         :param default_value:
-        :return: (is_path_valid, value)
+        :return: value. If not found - default_value
         """
         cur = _json
         for section in path:
             if section not in cur:
-                return False, default_value
+                return default_value
             cur = cur[section]
-        return True, cur
+        return cur
 
 
 class Format:
