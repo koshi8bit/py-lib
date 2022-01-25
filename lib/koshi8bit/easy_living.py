@@ -20,9 +20,13 @@ class Utils:
         return os.path.isdir(_path)
 
     @staticmethod
-    def dict_append(_dict, index, elem):
+    def dict_append(_dict, index, elem, add_duplicate=False):
         if index in _dict:
-            _dict[index].append(elem)
+            if add_duplicate:
+                _dict[index].append(elem)
+            else:
+                if elem not in _dict[index]:
+                    _dict[index].append(elem)
         else:
             _dict[index] = [elem]
 
