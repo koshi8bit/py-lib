@@ -102,7 +102,8 @@ class Format:
 
     @staticmethod
     def date_time_file_format(show_ms=False, separator=separator_iso):
-        return Format.date_file_format + separator + (Format.time_file_ms_format if show_ms else Format.time_file_format)
+        return Format.date_file_format + separator + \
+               (Format.time_file_ms_format if show_ms else Format.time_file_format)
 
     @staticmethod
     def date_time_file(dt: datetime.datetime = None, show_ms=False, separator=separator_iso):
