@@ -52,11 +52,14 @@ class TestGoogleSheets(TestCase):
     def test_write(self):
         with GoogleSheets(self.cred_file_valid, self.spreadsheet_id) as gs:
             n = Format.date_time_ui(True, False)
-            data = [[10, n, 30], [40, '50', 60]]
+            data = [[10, n, 30.1], ['40.1', None, '60,1']]
             gs.write(self.sheet, 'F3:H', data)
 
             cell = gs.read_cell(self.sheet, 'G3')
             self.assertEqual(n, cell)
+
+            cell = gs.read_cell(self.sheet, 'G4')
+            self.assertEqual(None, cell)
 
     def test_clear(self):
         with GoogleSheets(self.cred_file_valid, self.spreadsheet_id) as gs:

@@ -35,8 +35,6 @@ class TestFormat(TestCase):
         Utils.dict_append(d, 3, "d")
         self.assertEqual({1: ["a", "b", "b"], 2: ["c"], 3: ["d"]}, d)
 
-
-
     def test_format_date_time_file(self):
         dt = datetime(2021, 7, 14, 13, 20, 16)
         f = el.Format.date_time_file(False)
