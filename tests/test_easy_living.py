@@ -2,6 +2,7 @@ import os.path
 from datetime import datetime
 from unittest import TestCase
 from lib.koshi8bit.easy_living import Utils, Format
+from freezegun import freeze_time
 from pathlib import Path
 
 
@@ -50,6 +51,13 @@ class TestFormat(TestCase):
         self.assertEqual('%H-%M-%S', Format.time_file_format)
         self.assertEqual('%H-%M-%S-%f', Format.time_file_ms_format)
 
+        with freeze_time("2021-07-14 13:20:16.123456"):
+            f = Format.date_time_file(None, False)
+            self.assertEqual('2021-07-14T13-20-16', dt.strftime(f))
+
+            f = Format.date_time_file(None, True)
+            self.assertEqual('2021-07-14T13-20-16-123456', dt.strftime(f))
+
     def test_format_date_time_ui_with_ms(self):
         dt = datetime(2021, 7, 14, 13, 20, 16, 123456)
 
@@ -65,6 +73,13 @@ class TestFormat(TestCase):
         self.assertEqual('%Y-%m-%d', Format.date_ui_format)
         self.assertEqual('%H:%M:%S', Format.time_ui_format)
         self.assertEqual('%H:%M:%S.%f', Format.time_ui_ms_format)
+
+        with freeze_time("2021-07-14 13:20:16.123456"):
+            f = Format.date_time_ui(None, False)
+            self.assertEqual('2021-07-14T13:20:16', dt.strftime(f))
+
+            f = Format.date_time_ui(None, True)
+            self.assertEqual('2021-07-14T13:20:16.123456', dt.strftime(f))
 
     def test_format_double(self):
         self.assertEqual('3.140', Format.double(3.14, 3))
