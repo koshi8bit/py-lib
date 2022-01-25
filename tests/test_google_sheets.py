@@ -36,8 +36,6 @@ class TestGoogleSheets(TestCase):
             cell = gs.read_cell(self.sheet, 'F1')
             self.assertEqual(cell, 'write1')
 
-    def test_read_cell_none(self):
-        with GoogleSheets(self.cred_file_valid, self.spreadsheet_id) as gs:
             cell = gs.read_cell(self.sheet, 'A1')
             self.assertEqual(cell, None)
 

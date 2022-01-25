@@ -48,85 +48,68 @@ class Utils:
 
 
 class Format:
+    separator_iso = 'T'
+    separator_ui = '@'
+    separator_file = '--'
+
+    date_ui_format = '%Y-%m-%d'
+    time_ui_format = '%H:%M:%S'
+    time_ui_ms_format = time_ui_format + '.%f'
+
+    date_file_format = date_ui_format
+    time_file_format = '%H-%M-%S'
+    time_file_ms_format = time_file_format + '-%f'
 
     @staticmethod
-    def date():
-        return '%Y-%m-%d'
-
-    ###
+    def now(_format: str):
+        return datetime.datetime.now().strftime(_format)
 
     @staticmethod
-    def date_ui(now: bool):
-        f = Format.date()
-        if now:
-            return Format.now(f)
+    def _format(dt: datetime.datetime, _format: str):
+        if dt:
+            return dt.strftime(_format)
         else:
-            return f
+            return Format.now(_format)
+
+    # ui
 
     @staticmethod
-    def separator_ui():
-        return '@'
+    def date_ui(dt: datetime.datetime = None):
+        return Format._format(dt, Format.date_ui_format)
 
     @staticmethod
-    def time_ui(now: bool, show_ms: bool):
-        f = '%H:%M:%S'
-        if show_ms:
-            f = f + '.%f'
-
-        if now:
-            return Format.now(f)
-        else:
-            return f
+    def time_ui(dt: datetime.datetime = None, show_ms=False):
+        return Format._format(dt, Format.time_ui_ms_format if show_ms else Format.time_ui_format)
 
     @staticmethod
-    def date_time_ui(now: bool, show_ms: bool, iso=False):
-        separator = Format.separator_iso() if iso else Format.separator_ui()
-        f = Format.date_ui(False) + separator + Format.time_ui(False, show_ms)
-        if now:
-            return Format.now(f)
-        else:
-            return f
-
-    ###
+    def date_time_ui_format(show_ms=False, separator=separator_iso):
+        return Format.date_ui_format + separator + (Format.time_ui_ms_format if show_ms else Format.time_ui_format)
 
     @staticmethod
-    def date_file(now: bool):
-        f = Format.date()
-        if now:
-            return Format.now(f)
-        else:
-            return f
+    def date_time_ui(dt: datetime.datetime = None, show_ms=False, separator=separator_iso):
+        f = Format.date_time_ui_format(show_ms, separator)
+        return Format._format(dt, f)
+
+    # file
 
     @staticmethod
-    def separator_file():
-        return '--'
+    def date_file(dt: datetime.datetime = None):
+        return Format._format(dt, Format.date_file_format)
 
     @staticmethod
-    def separator_iso():
-        return 'T'
+    def time_file(dt: datetime.datetime = None, show_ms=False):
+        return Format._format(dt, Format.time_file_ms_format if show_ms else Format.time_file_format)
 
     @staticmethod
-    def time_file(now: bool):
-        f = '%H-%M-%S'
-        if now:
-            return Format.now(f)
-        else:
-            return f
+    def date_time_file_format(show_ms=False, separator=separator_iso):
+        return Format.date_file_format + separator + (Format.time_file_ms_format if show_ms else Format.time_file_format)
 
     @staticmethod
-    def date_time_file(now: bool, iso=False):
-        separator = Format.separator_iso() if iso else Format.separator_file()
-        f = Format.date_file(False) + separator + Format.time_file(False)
-        if now:
-            return Format.now(f)
-        else:
-            return f
+    def date_time_file(dt: datetime.datetime = None, show_ms=False, separator=separator_iso):
+        f = Format.date_time_file_format(show_ms, separator)
+        return Format._format(dt, f)
 
-    @staticmethod
-    def now(template: str):
-        return datetime.datetime.now().strftime(template)
-
-    ###
+    # double
 
     @staticmethod
     def double(value, precision=3, scientific_notation=False, show_group_separator=False, separator_sign='.'):
@@ -176,5 +159,3 @@ class BackgroundWorker(object):
     def stop(self):
         self._timer.cancel()
         self.is_running = False
-
-
