@@ -74,39 +74,39 @@ class Format:
     # ui
 
     @staticmethod
-    def date_ui(dt: datetime.datetime = None):
+    def date_ui(dt: datetime.datetime = None) -> str:
         return Format._format(dt, Format.date_ui_format)
 
     @staticmethod
-    def time_ui(dt: datetime.datetime = None, show_ms=False):
+    def time_ui(dt: datetime.datetime = None, show_ms=False) -> str:
         return Format._format(dt, Format.time_ui_ms_format if show_ms else Format.time_ui_format)
 
     @staticmethod
-    def date_time_ui_format(show_ms=False, separator=separator_iso):
+    def date_time_ui_format(show_ms=False, separator=separator_iso) -> str:
         return Format.date_ui_format + separator + (Format.time_ui_ms_format if show_ms else Format.time_ui_format)
 
     @staticmethod
-    def date_time_ui(dt: datetime.datetime = None, show_ms=False, separator=separator_iso):
+    def date_time_ui(dt: datetime.datetime = None, show_ms=False, separator=separator_iso) -> str:
         f = Format.date_time_ui_format(show_ms, separator)
         return Format._format(dt, f)
 
     # file
 
     @staticmethod
-    def date_file(dt: datetime.datetime = None):
+    def date_file(dt: datetime.datetime = None) -> str:
         return Format._format(dt, Format.date_file_format)
 
     @staticmethod
-    def time_file(dt: datetime.datetime = None, show_ms=False):
+    def time_file(dt: datetime.datetime = None, show_ms=False) -> str:
         return Format._format(dt, Format.time_file_ms_format if show_ms else Format.time_file_format)
 
     @staticmethod
-    def date_time_file_format(show_ms=False, separator=separator_iso):
+    def date_time_file_format(show_ms=False, separator=separator_iso) -> str:
         return Format.date_file_format + separator + \
                (Format.time_file_ms_format if show_ms else Format.time_file_format)
 
     @staticmethod
-    def date_time_file(dt: datetime.datetime = None, show_ms=False, separator=separator_iso):
+    def date_time_file(dt: datetime.datetime = None, show_ms=False, separator=separator_iso) -> str:
         f = Format.date_time_file_format(show_ms, separator)
         return Format._format(dt, f)
 
