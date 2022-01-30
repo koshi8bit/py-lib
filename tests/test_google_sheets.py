@@ -49,7 +49,7 @@ class TestGoogleSheets(TestCase):
 
     def test_write(self):
         with GoogleSheets(self.cred_file_valid, self.spreadsheet_id) as gs:
-            n = Format.date_time_ui(True, False)
+            n = Format.date_time_ui(None, False)
             data = [[10, n, 30.1], ['40.1', None, '60,1']]
             gs.write(self.sheet, 'F3:H', data)
 
@@ -63,7 +63,7 @@ class TestGoogleSheets(TestCase):
         with GoogleSheets(self.cred_file_valid, self.spreadsheet_id) as gs:
             gs.clear(self.sheet, 'J3:L')
 
-            n = Format.date_time_ui(True, False)
+            n = Format.date_time_ui(None, False)
             data = [[10, n, 30], [40, '50', 60]]
             gs.write(self.sheet, 'J3:L', data)
 
