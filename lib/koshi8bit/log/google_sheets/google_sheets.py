@@ -136,6 +136,7 @@ class GoogleSheets:
 
             if not is_ok:
                 raise self.AppendUnsuccessful
+            return res
 
         except Exception as e:
             self.process_ex(e, range_)
@@ -152,6 +153,7 @@ class GoogleSheets:
 
             if not is_ok:
                 raise self.WriteUnsuccessful
+            return res
 
         except Exception as e:
             self.process_ex(e, range_)
@@ -168,6 +170,7 @@ class GoogleSheets:
 
             if not is_ok:
                 raise self.ClearUnsuccessful
+            return res
 
         except Exception as e:
             self.process_ex(e, range_)
