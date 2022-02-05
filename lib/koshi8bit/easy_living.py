@@ -113,23 +113,22 @@ class Format:
     # double
 
     @staticmethod
-    def double(value, precision=3, scientific_notation=False, show_group_separator=False, separator_sign='.'):
+    def double(value, precision=3, scientific_notation=False, comma_separator='.',
+               thousands_separator: str = "") -> str:
         assert isinstance(value, (float, int))
         assert isinstance(precision, int)
         assert isinstance(scientific_notation, bool)
+        assert isinstance(comma_separator, str)
+        assert isinstance(thousands_separator, str)
 
-        result = None
-        if scientific_notation:
-            f = f'%.{precision}E'
-        else:
-            f = f'%.{precision}f'
+        scientific_notation_letter = 'E' if scientific_notation else 'f'
+        result = f"{value:,.{precision}{scientific_notation_letter}}"
 
-        result = f % value
+        result = result.replace(",", thousands_separator)
 
-        if separator_sign != '.':
+        if comma_separator != '.':
             result = result.replace('.', ',')
 
-        # assert isinstance(result, type(None))
         return result
 
 

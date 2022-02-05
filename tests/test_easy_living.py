@@ -82,13 +82,23 @@ class TestFormat(TestCase):
             self.assertEqual('2021-07-14T13:20:16.123456', dt.strftime(f))
 
     def test_format_double(self):
-        self.assertEqual('3.140', Format.double(3.14, 3))
+        self.assertEqual('3.140', Format.double(3.14))
+
         self.assertEqual('3.14', Format.double(3.14, 2))
+        self.assertEqual('3.1', Format.double(3.14, 1))
         self.assertEqual('3.00', Format.double(3, 2))
 
-    def test_format_double_scientific_notation(self):
         self.assertEqual('3.140E+00', Format.double(3.14, 3, True))
         self.assertEqual('3.140E-01', Format.double(0.314, 3, True))
 
-    def test_format_double_separator_sign(self):
-        self.assertEqual('0,314', Format.double(0.314, 3, separator_sign=','))
+        self.assertEqual('0,314', Format.double(0.314, 3, comma_separator=','))
+
+        self.assertEqual('12345.60', Format.double(12345.6, 2))
+        self.assertEqual("12'345,60", Format.double(12345.6, 2,
+                                                    comma_separator=",",
+                                                    thousands_separator="'"))
+
+        self.assertEqual("1,23E+04", Format.double(12345.6, 2,
+                                                   scientific_notation=True,
+                                                   comma_separator=",",
+                                                   thousands_separator="'"))
