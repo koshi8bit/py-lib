@@ -98,6 +98,8 @@ class TestFormat(TestCase):
                                                     comma_separator=",",
                                                     thousands_separator="'"))
 
+        self.assertEqual("12'345.60", Format.double(12345.6, 2, thousands_separator="'"))
+
         self.assertEqual("1,23E+04", Format.double(12345.6, 2,
                                                    scientific_notation=True,
                                                    comma_separator=",",
