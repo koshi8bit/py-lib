@@ -3,15 +3,14 @@ import googleapiclient
 from oauth2client.service_account import ServiceAccountCredentials
 import httplib2
 from googleapiclient.discovery import build
-from dotenv import load_dotenv
 import os
 import re
 import validators
 
 
 class GoogleSheets:
-    service = None
-    spreadsheet_id = None
+    service: googleapiclient.discovery.Resource
+    spreadsheet_id: str
 
     def __init__(self, creds_json: str, full_link: str):
 
@@ -71,7 +70,7 @@ class GoogleSheets:
         if not os.path.isfile(file_name):
             raise ValueError("Cred file does not exist")
 
-    def parsing_id_from_table_link(self, full_link: str):
+    def parsing_id_from_table_link(self, full_link: str) -> str:
         full_link = full_link.rstrip("/")
         sheet_id = re.search(r"https://docs\.google\.com/spreadsheets/d/(.+)", full_link)
         if sheet_id is None:
@@ -174,6 +173,10 @@ class GoogleSheets:
 
         except Exception as e:
             self.process_ex(e, range_)
+
+    def insert(self, sheet: str, pos: str):
+        "https://youtu.be/FL7WSsO5EVs"
+        raise NotImplemented()
 
     # def __del__(self):
     #     self.disconnect()
