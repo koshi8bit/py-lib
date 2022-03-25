@@ -24,16 +24,54 @@ class TestFormat(TestCase):
         self.assertFalse(Utils.dir_exist(root_path))
         self.assertFalse(Utils.dir_exist(extra_path))
 
+    def test_somesss(self):
+        original = {1: 'one', 2: 'two'}
+        new = original.copy()
+        original[3] = "three"
+
+        print('Orignal: ', original)
+        print('New: ', new)
+        self.assertTrue(True)
+
     def test_utils_dict_append(self):
         d = {1: ["a", "b"], 2: ["c"]}
         d2 = Utils.dict_append(d, 1, "b", False)
-        self.assertEqual({1: ["a", "b"], 2: ["c"]}, d2)
+        self.assertEqual(d, d2)
 
         d2 = Utils.dict_append(d, 1, "b", True)
         self.assertEqual({1: ["a", "b", "b"], 2: ["c"]}, d2)
 
-        d2 = Utils.dict_append(d, 3, "d")
+        d2 = Utils.dict_append(d2, 3, "d")
         self.assertEqual({1: ["a", "b", "b"], 2: ["c"], 3: ["d"]}, d2)
+
+        d = {
+                "user1": [
+                    "123",
+                    "456"
+                ]
+            }
+
+        d2 = Utils.dict_append(d, "user1", "789")
+        self.assertEqual(
+            {
+                "user1": [
+                    "123",
+                    "456",
+                    "789"
+                ]
+            }, d2)
+
+        d2 = Utils.dict_append(d, "user2", "789")
+        self.assertEqual(
+            {
+                "user1": [
+                    "123",
+                    "456"
+                ],
+                "user2": [
+                    "789"
+                ]
+            }, d2)
 
     def test_format_date_time_file(self):
         dt = datetime(2021, 7, 14, 13, 20, 16, 123456)
