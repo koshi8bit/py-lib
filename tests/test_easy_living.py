@@ -26,14 +26,14 @@ class TestFormat(TestCase):
 
     def test_utils_dict_append(self):
         d = {1: ["a", "b"], 2: ["c"]}
-        Utils.dict_append(d, 1, "b", False)
-        self.assertEqual({1: ["a", "b"], 2: ["c"]}, d)
+        d2 = Utils.dict_append(d, 1, "b", False)
+        self.assertEqual({1: ["a", "b"], 2: ["c"]}, d2)
 
-        Utils.dict_append(d, 1, "b", True)
-        self.assertEqual({1: ["a", "b", "b"], 2: ["c"]}, d)
+        d2 = Utils.dict_append(d, 1, "b", True)
+        self.assertEqual({1: ["a", "b", "b"], 2: ["c"]}, d2)
 
-        Utils.dict_append(d, 3, "d")
-        self.assertEqual({1: ["a", "b", "b"], 2: ["c"], 3: ["d"]}, d)
+        d2 = Utils.dict_append(d, 3, "d")
+        self.assertEqual({1: ["a", "b", "b"], 2: ["c"], 3: ["d"]}, d2)
 
     def test_format_date_time_file(self):
         dt = datetime(2021, 7, 14, 13, 20, 16, 123456)

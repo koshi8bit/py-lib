@@ -5,7 +5,7 @@ echo SCRIPT DISABLED! DELETE THIS 3 LINES
 pause
 exit
 
-set source="XXX"
+set source=".\koshi8bit"
 
 set dest=%cd%\koshi8bit\
 :RESTARTT

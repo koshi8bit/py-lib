@@ -24,14 +24,17 @@ class Utils:
 
     @staticmethod
     def dict_append(_dict, index, elem, add_duplicate=False):
-        if index in _dict:
+        res = dict(_dict)
+        if index in res:
             if add_duplicate:
-                _dict[index].append(elem)
+                res[index].append(elem)
             else:
-                if elem not in _dict[index]:
-                    _dict[index].append(elem)
+                if elem not in res[index]:
+                    res[index].append(elem)
         else:
-            _dict[index] = [elem]
+            res[index] = [elem]
+
+        return res
 
     @staticmethod
     def json_get_val(_json, path, default_value=None):
