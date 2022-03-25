@@ -5,7 +5,7 @@ echo SCRIPT DISABLED! DELETE THIS 3 LINES
 pause
 exit
 
-set source=".\koshi8bit"
+set source="C:\k8b\prog\python\lib\lib\koshi8bit"
 
 set dest=%cd%\koshi8bit\
 :RESTARTT
