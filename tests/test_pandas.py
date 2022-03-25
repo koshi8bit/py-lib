@@ -1,4 +1,7 @@
 from unittest import TestCase
+
+import numpy as np
+
 from lib.koshi8bit.easy_living import Pandas
 import pandas as pd
 
@@ -7,53 +10,56 @@ class Test(TestCase):
     def __init__(self, argv):
         super().__init__(argv)
         d = {
-            "a": {
-                "x": 1,
-                "y": 2
+            "r1": {
+                "c1": 1,
+                "c2": 2
             },
-            "b": {
-                "x": 3,
-                "y": 4
+            "r2": {
+                "c1": 3,
+                "c2": 4
             }
         }
-        self.df = pd.DataFrame(d)
+        self.df = pd.DataFrame(d).transpose()
         # Pandas.print(self.df, "test")
 
     def test_pandas_is_null(self):
-        pass
+        self.df["c3"] = [None, np.nan]
+        self.df.loc['r3'] = [4, 5, 6]
+        self.df.loc['r4'] = [7, 8, "asd"]
+        Pandas.print(self.df)
 
     def test_df_to_str(self):
         self.assertEqual(Pandas.df_to_str(self.df, "test"),
                          """
 
 ### test ###
-   a  b
-x  1  3
-y  2  4
+    c1  c2
+r1   1   2
+r2   3   4
 len=2""")
 
         self.assertEqual(Pandas.df_to_str(self.df, "test", indent=False),
                          """### test ###
-   a  b
-x  1  3
-y  2  4
+    c1  c2
+r1   1   2
+r2   3   4
 len=2""")
 
         self.assertEqual(Pandas.df_to_str(self.df),
                          """
 
-   a  b
-x  1  3
-y  2  4
+    c1  c2
+r1   1   2
+r2   3   4
 len=2""")
 
         self.assertEqual(Pandas.df_to_str(self.df, indent=False),
-                         """   a  b
-x  1  3
-y  2  4
+                         """    c1  c2
+r1   1   2
+r2   3   4
 len=2""")
 
         self.assertEqual(Pandas.df_to_str(self.df, show_len=False, indent=False),
-                         """   a  b
-x  1  3
-y  2  4""")
+                         """    c1  c2
+r1   1   2
+r2   3   4""")
