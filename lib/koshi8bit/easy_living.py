@@ -1,7 +1,8 @@
+import concurrent.futures
 import datetime
 import os
 import shutil
-from threading import Timer
+from threading import Timer, Thread
 from pathlib import Path
 
 import numpy as np
@@ -62,6 +63,27 @@ class Utils:
                 return default_value
             cur = cur[section]
         return cur
+
+    @staticmethod
+    def start_thread_pool(f, args: list, threads=None):
+        """
+        Runs code in multiple threads
+        :param f: function
+        :param args: array of tuple
+        :param threads: Count of threads. If None - same as len of args
+        :return:
+        """
+        res = []
+        with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+            future_task = {executor.submit(f, *arg1): arg1 for arg1 in args}
+            for future in concurrent.futures.as_completed(future_task):
+                arg2 = future_task[future]
+                try:
+                    res.append((arg2, future.result(), None))
+                except Exception as exc:
+                    print(f"start_thread_pool exception: {str(str)}")
+                    res.append((arg2, None, exc))
+        return res
 
 
 class Format:
