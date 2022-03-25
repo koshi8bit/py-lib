@@ -1,7 +1,0 @@
-.env
-.idea/
-__pycache__/
-venv/
-private/
-
-koshi8bit-update.bat
