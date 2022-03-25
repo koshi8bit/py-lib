@@ -23,7 +23,17 @@ class Utils:
         return os.path.isdir(_path)
 
     @staticmethod
-    def dict_append(_dict: dict, index, elem, add_duplicate=False):
+    def dict_extend(_dict: dict, index, elem: list, add_duplicate=False) -> dict:
+        import copy
+        res = copy.deepcopy(_dict)
+
+        for e in elem:
+            res = Utils.dict_append(res, index, e, add_duplicate)
+
+        return res
+
+    @staticmethod
+    def dict_append(_dict: dict, index, elem, add_duplicate=False) -> dict:
         import copy
         res = copy.deepcopy(_dict)
         if index in res:

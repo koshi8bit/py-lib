@@ -73,6 +73,14 @@ class TestFormat(TestCase):
                 ]
             }, d2)
 
+    def test_utils_dict_extend(self):
+        d = {1: ["a", "b"], 2: ["c"]}
+        d2 = Utils.dict_extend(d, 1, ["b", "c"])
+        self.assertEqual({1: ["a", "b", "c"], 2: ["c"]}, d2)
+
+        d2 = Utils.dict_extend(d, 1, ["b", "c"], True)
+        self.assertEqual({1: ["a", "b", "b", "c"], 2: ["c"]}, d2)
+
     def test_format_date_time_file(self):
         dt = datetime(2021, 7, 14, 13, 20, 16, 123456)
 
