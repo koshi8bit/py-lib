@@ -81,7 +81,7 @@ class Utils:
                 try:
                     res.append((arg2, future.result(), None))
                 except Exception as exc:
-                    print(f"start_thread_pool exception: {str(str)}")
+                    print(f"start_thread_pool exception: {str(exc)}")
                     res.append((arg2, None, exc))
         return res
 
@@ -227,3 +227,8 @@ class Pandas:
     @staticmethod
     def print(df: pd.DataFrame, caption: str = "", show_len: bool = True):
         print(Pandas.df_to_str(df, caption, show_len))
+
+    @staticmethod
+    def change_type(df: pd.DataFrame) -> pd.DataFrame:
+        res = pd.DataFrame(df)
+        return res.astype(dtype={'address_comment': 'string'})
