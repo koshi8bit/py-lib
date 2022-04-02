@@ -75,7 +75,12 @@ class Utils:
         """
         res = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
-            future_task = {executor.submit(f, *arg1): arg1 for arg1 in args}
+            future_task = {}
+            for arg1 in args:
+                future_task[executor.submit(f, *arg1)] = arg1
+                # print(f"{arg1=}")
+                # print("!!", *arg1)
+            # future_task = {executor.submit(f, *arg1): arg1 for arg1 in args}
             for future in concurrent.futures.as_completed(future_task):
                 arg2 = future_task[future]
                 try:

@@ -1,3 +1,4 @@
+import json
 import os.path
 from datetime import datetime
 from unittest import TestCase
@@ -82,28 +83,58 @@ class TestFormat(TestCase):
         self.assertEqual({1: ["a", "b", "b", "c"], 2: ["c"]}, d2)
 
     def test_utils_start_thread_pool(self):
-        # v = [
-        #     (2, 2),
-        #     (3, 2),
-        #     (4, 2),
-        #     (5, 2),
-        #     (6, 2),
-        #     (3, 10)
-        # ]
-        #
-        # def f(a, b):
-        #     import time
-        #     print("!", a, b)
-        #     time.sleep(1)
-        #     return a + b
-        #
-        # r = Utils.start_thread_pool(f, v)
+        v = [
+            (2, 2),
+            (3, 2),
+            (4, 2),
+            (5, 2),
+            (6, 2),
+            (3, 10)
+        ]
+
+        def f(a, b):
+            import time
+            print("!", a, b)
+            time.sleep(1)
+            return a + b
+
+        r = Utils.start_thread_pool(f, v)
+        for res in r:
+            self.assertEqual(res[0][0] + res[0][1], res[1])
+
         # self.assertEqual(r, [((3, 2), 5, None), ((5, 2), 7, None), ((2, 2), 4, None),
         #                      ((3, 10), 13, None), ((6, 2), 8, None), ((4, 2), 6, None)])
         # print(r)
 
-        # Thread diff result order
-        pass
+    def test_utils_start_thread_pool_class(self):
+        class Data:
+            def __init__(self):
+                self.name = "faka"
+
+            def f(self, comment: str, datas: list):
+                import time
+                print("starting", self.name, datas, f"add={comment}")
+                time.sleep(1)
+                print("stopping", self.name, datas, f"add={comment}")
+                return datas[0] + datas[1]
+
+            def do(self):
+                data = [
+                    ["1", [0, 1]],
+                    ["5", [2, 3]]
+                ]
+                # data = list(map(lambda x: (self, x), data))
+                # print(f"{data=}")
+
+                res = Utils.start_thread_pool(self.f, data)
+                # print(res)
+                return res
+                # print(json.dumps(dict(res), indent=4))
+
+        d = Data()
+        for r in d.do():
+            print(r)
+            self.assertEqual(r[0][1][0] + r[0][1][1], r[1])
 
     def test_format_date_time_file(self):
         dt = datetime(2021, 7, 14, 13, 20, 16, 123456)
