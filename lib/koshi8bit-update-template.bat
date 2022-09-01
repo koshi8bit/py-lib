@@ -1,16 +1,11 @@
 ::COPY THIS TO YOUR PROJECT .\lib\
 @echo off
 
-set source="F:\home\koshi8bit\prog\python\lib\lib\koshi8bit"
+echo SCRIPT DISABLED! DELETE THIS 3 LINES
+pause
+exit
 
-
-echo.%source% | findstr %cd% 1>nul
-
-if not errorlevel 1 (
-    echo SCRIPT DISABLED! SAME FOLDER
-    pause
-    exit
-)
+set source="XXX"
 
 set dest=%cd%\koshi8bit\
 :RESTARTT
