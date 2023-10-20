@@ -3,19 +3,26 @@ import googleapiclient
 from oauth2client.service_account import ServiceAccountCredentials
 import httplib2
 from googleapiclient.discovery import build
+from dotenv import load_dotenv
 import os
 import re
 import validators
+import ssl
 
 
 class GoogleSheets:
-    service: googleapiclient.discovery.Resource
-    spreadsheet_id: str
+    service = None
+    spreadsheet_id = None
 
     def __init__(self, creds_json: str, full_link: str):
+        self.creds_json = creds_json
+        self.full_link = full_link
+        self.init()
 
+
+    def init(self):
         # self.check_cred_file(creds_json)
-        self.credentials_file = creds_json
+        self.credentials_file = self.creds_json
         try:
             self.connect()
 
@@ -25,12 +32,12 @@ class GoogleSheets:
         except Exception:
             raise self.InvalidCred
 
-        if validators.url(full_link):
-            self.spreadsheet_id = self.parsing_id_from_table_link(full_link)
-        elif full_link is None:
+        if validators.url(self.full_link):
+            self.spreadsheet_id = self.parsing_id_from_table_link(self.full_link)
+        elif self.full_link is None:
             raise ValueError("Id of the table is None. Perhaps you forgot to pass the required full_link parameter")
         else:
-            self.spreadsheet_id = full_link
+            self.spreadsheet_id = self.full_link
 
     class InvalidCred(Exception):
         def __str__(self):
@@ -70,7 +77,7 @@ class GoogleSheets:
         if not os.path.isfile(file_name):
             raise ValueError("Cred file does not exist")
 
-    def parsing_id_from_table_link(self, full_link: str) -> str:
+    def parsing_id_from_table_link(self, full_link: str):
         full_link = full_link.rstrip("/")
         sheet_id = re.search(r"https://docs\.google\.com/spreadsheets/d/(.+)", full_link)
         if sheet_id is None:
@@ -124,21 +131,28 @@ class GoogleSheets:
 
     def append(self, sheet: str, pos: str, data):
         range_ = f'{sheet}!{pos}'
-        try:
-            res = self.service.spreadsheets().values().append(
-                spreadsheetId=self.spreadsheet_id,
-                range=range_, valueInputOption="USER_ENTERED",
-                insertDataOption="INSERT_ROWS", body={"values": data}
-            ).execute()
+        try_more_times = true
+        while try_more_times:
+            try:
+                res = self.service.spreadsheets().values().append(
+                    spreadsheetId=self.spreadsheet_id,
+                    range=range_, valueInputOption="USER_ENTERED",
+                    insertDataOption="INSERT_ROWS", body={"values": data}
+                ).execute()
 
-            is_ok = isinstance(res, dict) and 'spreadsheetId' in res and res['spreadsheetId'] == self.spreadsheet_id
+                is_ok = isinstance(res, dict) and 'spreadsheetId' in res and res['spreadsheetId'] == self.spreadsheet_id
 
-            if not is_ok:
-                raise self.AppendUnsuccessful
-            return res
+                if not is_ok:
+                    raise self.AppendUnsuccessful
+                try_more_times = false
+                return res
 
-        except Exception as e:
-            self.process_ex(e, range_)
+            except ssl.SSLEOFError as e:
+                self.init()
+
+            except Exception as e:
+                try_more_times = false
+                self.process_ex(e, range_)
 
     def write(self, sheet: str, pos: str, data):
         range_ = f'{sheet}!{pos}'
@@ -173,10 +187,6 @@ class GoogleSheets:
 
         except Exception as e:
             self.process_ex(e, range_)
-
-    def insert(self, sheet: str, pos: str):
-        "https://youtu.be/FL7WSsO5EVs"
-        raise NotImplemented()
 
     # def __del__(self):
     #     self.disconnect()
