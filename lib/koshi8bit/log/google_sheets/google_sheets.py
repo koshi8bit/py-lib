@@ -131,7 +131,7 @@ class GoogleSheets:
 
     def append(self, sheet: str, pos: str, data):
         range_ = f'{sheet}!{pos}'
-        try_more_times = true
+        try_more_times = True
         while try_more_times:
             try:
                 res = self.service.spreadsheets().values().append(
@@ -144,14 +144,16 @@ class GoogleSheets:
 
                 if not is_ok:
                     raise self.AppendUnsuccessful
-                try_more_times = false
+                try_more_times = False
                 return res
 
             except ssl.SSLEOFError as e:
+                logging.warning(f"ssl.SSLEOFError detected: {str(e)}")
+                print(f"ssl.SSLEOFError detected: {str(e)}")
                 self.init()
 
             except Exception as e:
-                try_more_times = false
+                try_more_times = False
                 self.process_ex(e, range_)
 
     def write(self, sheet: str, pos: str, data):
