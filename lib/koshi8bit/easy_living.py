@@ -61,6 +61,16 @@ class Utils:
             cur = cur[section]
         return cur
 
+    class ThreadPoolResult:
+        def __init__(self, arg, result, exception):
+            self.arg = arg
+            self.result = result
+            self.exception = exception
+
+        def __str__(self):
+            return f"arg='{self.arg}'; result='{self.result}'; exception='{self.exception}'"
+
+
     @staticmethod
     def start_thread_pool(f, args: list, threads=None):
         """
@@ -81,10 +91,12 @@ class Utils:
             for future in concurrent.futures.as_completed(future_task):
                 arg2 = future_task[future]
                 try:
-                    res.append((arg2, future.result(), None))
+                    # res.append((arg2, future.result(), None))
+                    res.append(Utils.ThreadPoolResult(arg2, future.result(), None))
                 except Exception as exc:
                     print(f"start_thread_pool exception: {str(exc)}")
-                    res.append((arg2, None, exc))
+                    res.append(Utils.ThreadPoolResult(arg2, None, exc))
+                    # res.append((arg2, None, exc))
         return res
 
 

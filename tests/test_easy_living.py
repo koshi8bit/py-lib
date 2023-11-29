@@ -100,7 +100,7 @@ class TestFormat(TestCase):
 
         r = Utils.start_thread_pool(f, v)
         for res in r:
-            self.assertEqual(res[0][0] + res[0][1], res[1])
+            self.assertEqual(res.arg[0] + res.arg[1], res.result)
 
         # self.assertEqual(r, [((3, 2), 5, None), ((5, 2), 7, None), ((2, 2), 4, None),
         #                      ((3, 10), 13, None), ((6, 2), 8, None), ((4, 2), 6, None)])
